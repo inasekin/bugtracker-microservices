@@ -3,11 +3,11 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BugTracker.WebApplication.Contracts
 {
-    public record TaskItemUpdateOptions(
-        [Required][MaxLength(TaskItem.MAX_TOPIC_LENGTH)] string Topic,
-        [MaxLength(TaskItem.MAX_DESCRIPTION_LENGTH)] string Description,
-        TaskItemStatus Status,
-        TaskItemCategory Category,
+    public record IssueUpdateOptions(
+        [Required][MaxLength(Issue.MAX_TOPIC_LENGTH)] string Topic,
+        [MaxLength(Issue.MAX_DESCRIPTION_LENGTH)] string Description,
+        IssueStatus Status,
+        IssueCategory Category,
         DateTime StartDate,
         DateTime EndDate,
         int Readiness,

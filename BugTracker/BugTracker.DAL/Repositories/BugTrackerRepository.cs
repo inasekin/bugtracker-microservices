@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BugTracker.DAL.Repositories
 {
-    public class BugTrackerRepository : Repository<TaskItem> ,IBugTrackerRepository
+    public class BugTrackerRepository : Repository<Issue> ,IBugTrackerRepository
     {
         public BugTrackerDbContext dbContext;
         public BugTrackerRepository(BugTrackerDbContext dbContext)
@@ -11,14 +11,14 @@ namespace BugTracker.DAL.Repositories
         {
             this.dbContext = dbContext;
         }
-        public void AddToContext(TaskItem taskItem)
+        public void AddToContext(Issue taskItem)
         {
             this.dbContext.Add(taskItem);
         }
 
-        public DbSet<TaskItem> TaskItems()
+        public DbSet<Issue> TaskItems()
         {
-            return this.dbContext.TaskItems;
+            return this.dbContext.Issues;
         }
     }
 }

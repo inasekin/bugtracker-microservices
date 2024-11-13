@@ -1,6 +1,6 @@
 ﻿namespace BugTracker.Domain
 {
-    public enum TaskItemCategory
+    public enum IssueCategory
     {
         Bug = 1,
         Feature = 2,

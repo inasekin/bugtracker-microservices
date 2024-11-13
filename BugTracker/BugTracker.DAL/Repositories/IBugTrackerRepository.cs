@@ -5,7 +5,7 @@ namespace BugTracker.DAL.Repositories
 {
     public interface IBugTrackerRepository
     {
-        public DbSet<TaskItem> TaskItems();
-        public void AddToContext(TaskItem taskItem);
+        public DbSet<Issue> TaskItems();
+        public void AddToContext(Issue taskItem);
     }
 }

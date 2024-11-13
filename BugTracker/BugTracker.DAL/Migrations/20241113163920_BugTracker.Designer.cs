@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BugTracker.DAL.Migrations
 {
     [DbContext(typeof(BugTrackerDbContext))]
-    [Migration("20241109064052_BugTracker")]
+    [Migration("20241113163920_BugTracker")]
     partial class BugTracker
     {
         /// <inheritdoc />
@@ -25,16 +25,16 @@ namespace BugTracker.DAL.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.HasSequence<int>("TaskItemIdSequence")
+            modelBuilder.HasSequence<int>("IssueIdSequence")
                 .HasMin(1L)
                 .HasMax(100000L);
 
-            modelBuilder.Entity("BugTracker.Domain.TaskItem", b =>
+            modelBuilder.Entity("BugTracker.Domain.Issue", b =>
                 {
-                    b.Property<int>("TaskItemId")
+                    b.Property<int>("IssueId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .HasDefaultValueSql("NEXT VALUE FOR TaskItemIdSequence");
+                        .HasDefaultValueSql("NEXT VALUE FOR IssueIdSequence");
 
                     b.Property<string>("AffectedVersion")
                         .IsRequired()
@@ -48,33 +48,29 @@ namespace BugTracker.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("EndDate")
+                    b.Property<DateTimeOffset>("EndDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<byte[]>("Files")
-                        .IsRequired()
-                        .HasColumnType("bytea");
+                    b.Property<int>("IssueVersion")
+                        .HasColumnType("integer");
 
                     b.Property<int>("Readiness")
                         .HasColumnType("integer");
 
-                    b.Property<DateTime>("StartDate")
+                    b.Property<DateTimeOffset>("StartDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("TaskItemVersion")
-                        .HasColumnType("integer");
-
                     b.Property<string>("Topic")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasKey("TaskItemId");
+                    b.HasKey("IssueId");
 
-                    b.ToTable("TaskItem", (string)null);
+                    b.ToTable("Issue", (string)null);
                 });
 #pragma warning restore 612, 618
         }

@@ -5,7 +5,7 @@ namespace BugTracker.DAL
 {
     public class BugTrackerDbContext : DbContext
     {
-        public DbSet<TaskItem> TaskItems { get; set; }
+        public DbSet<Issue> Issues { get; set; }
 
         public BugTrackerDbContext()
         {
@@ -20,10 +20,10 @@ namespace BugTracker.DAL
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<TaskItem>().ToTable("TaskItem");
-            modelBuilder.Entity<TaskItem>().HasKey("TaskItemId");
-            modelBuilder.Entity<TaskItem>().Property(it => it.TaskItemId).HasDefaultValueSql("NEXT VALUE FOR TaskItemIdSequence");
-            modelBuilder.HasSequence<int>("TaskItemIdSequence").IncrementsBy(1).HasMin(1).HasMax(100000).StartsAt(1);
+            modelBuilder.Entity<Issue>().ToTable("Issue");
+            modelBuilder.Entity<Issue>().HasKey("IssueId");
+            modelBuilder.Entity<Issue>().Property(it => it.IssueId).HasDefaultValueSql("NEXT VALUE FOR IssueIdSequence");
+            modelBuilder.HasSequence<int>("IssueIdSequence").IncrementsBy(1).HasMin(1).HasMax(100000).StartsAt(1);
             base.OnModelCreating(modelBuilder);
         }
     }

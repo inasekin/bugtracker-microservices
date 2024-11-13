@@ -3,12 +3,12 @@ using System.Runtime.CompilerServices;
 
 namespace BugTracker.Domain
 {
-    public class TaskItem
+    public class Issue
     {
         public const int MAX_TOPIC_LENGTH = 255;
         public const int MAX_DESCRIPTION_LENGTH = 1000;
 
-        public int TaskItemId { get; private set; }
+        public int IssueId { get; private set; }
         public string Topic { get; private set; }
         public string Description { get; private set; }
         public string Status { get; private set; }
@@ -22,13 +22,13 @@ namespace BugTracker.Domain
         /// <summary>
         /// Техническое поле версии объекта
         /// </summary>
-        public int TaskItemVersion { get; private set; }
+        public int IssueVersion { get; private set; }
 
-        public static Result<TaskItem> Save(
+        public static Result<Issue> Save(
             string topic,
             string description,
-            TaskItemStatus status,
-            TaskItemCategory category,
+            IssueStatus status,
+            IssueCategory category,
             DateTime startDate,
             DateTime endDate,
             int readiness,
@@ -36,25 +36,25 @@ namespace BugTracker.Domain
         {
             if (string.IsNullOrEmpty(topic) || topic.Length > MAX_TOPIC_LENGTH)
             {
-                return Result.Failure<TaskItem>($"{nameof(topic)} cannot be more then 255 symbols");
+                return Result.Failure<Issue>($"{nameof(topic)} cannot be more then 255 symbols");
             }
 
             if (string.IsNullOrEmpty(description) || description.Length > MAX_DESCRIPTION_LENGTH)
             {
-                return Result.Failure<TaskItem>($"{nameof(description)} cannot be more then 1000 symbols");
+                return Result.Failure<Issue>($"{nameof(description)} cannot be more then 1000 symbols");
             }
 
             if (startDate > endDate)
             {
-                return Result.Failure<TaskItem>($"{nameof(startDate)} cannot be later than the {nameof(endDate)}");
+                return Result.Failure<Issue>($"{nameof(startDate)} cannot be later than the {nameof(endDate)}");
             }
 
             if (readiness < 1 || readiness > 100)
             {
-                return Result.Failure<TaskItem>($"{nameof(readiness)} should be between 0 and 100");
+                return Result.Failure<Issue>($"{nameof(readiness)} should be between 0 and 100");
             }
 
-            var taskItem = new TaskItem()
+            var taskItem = new Issue()
             {
                 Topic = topic,
                 Description = description,
@@ -64,16 +64,16 @@ namespace BugTracker.Domain
                 EndDate = endDate,
                 Readiness = readiness,
                 AffectedVersion = affectedVersion,
-                TaskItemVersion = 1
+                IssueVersion = 1
             };
 
             return Result.Success(taskItem);
         }
 
-        public Result<TaskItem> Update(string topic,
+        public Result<Issue> Update(string topic,
             string description,
-            TaskItemStatus status,
-            TaskItemCategory category,
+            IssueStatus status,
+            IssueCategory category,
             DateTime startDate,
             DateTime endDate,
             int readiness,
@@ -82,28 +82,28 @@ namespace BugTracker.Domain
         {
             if (string.IsNullOrEmpty(topic) || topic.Length > MAX_TOPIC_LENGTH)
             {
-                return Result.Failure<TaskItem>($"{nameof(topic)} cannot be more then 255 symbols");
+                return Result.Failure<Issue>($"{nameof(topic)} cannot be more then 255 symbols");
             }
 
             if (string.IsNullOrEmpty(description) || description.Length > MAX_DESCRIPTION_LENGTH)
             {
-                return Result.Failure<TaskItem>($"{nameof(description)} cannot be more then 1000 symbols");
+                return Result.Failure<Issue>($"{nameof(description)} cannot be more then 1000 symbols");
             }
 
             if (startDate > endDate)
             {
-                return Result.Failure<TaskItem>($"{nameof(startDate)} cannot be later than the {nameof(endDate)}");
+                return Result.Failure<Issue>($"{nameof(startDate)} cannot be later than the {nameof(endDate)}");
             }
 
             if (readiness < 1 || readiness > 100)
             {
-                return Result.Failure<TaskItem>($"{nameof(readiness)} should be between 0 and 100");
+                return Result.Failure<Issue>($"{nameof(readiness)} should be between 0 and 100");
             }
 
             var checkVersion = CheckVersion(taskItemVersion);
             if (checkVersion.IsFailure)
             {
-                return Result.Failure<TaskItem>(checkVersion.Error);
+                return Result.Failure<Issue>(checkVersion.Error);
             }
 
             this.Topic = topic;
@@ -114,17 +114,17 @@ namespace BugTracker.Domain
             this.EndDate = endDate;
             this.Readiness = readiness;
             this.AffectedVersion = affectedVersion;
-            this.TaskItemVersion += 1;
+            this.IssueVersion += 1;
 
             return Result.Success(this);
         }
 
         private Result CheckVersion(int taskItemVersion)
         {
-            if (taskItemVersion != this.TaskItemVersion)
+            if (taskItemVersion != this.IssueVersion)
             {
                 return Result
-                    .Failure($"The state of request card # {this.TaskItemId} has been changed by another user");
+                    .Failure($"The state of request card # {this.IssueId} has been changed by another user");
             }
 
             return Result.Success();

@@ -1,6 +1,6 @@
 ﻿namespace BugTracker.Domain
 {
-    public enum TaskItemStatus
+    public enum IssueStatus
     {
         New = 1,
         InWork = 2,

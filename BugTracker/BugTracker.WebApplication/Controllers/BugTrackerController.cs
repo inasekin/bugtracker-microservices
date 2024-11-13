@@ -18,11 +18,11 @@ namespace BugTracker.WebApplication.Controllers
         }
 
         [HttpGet]
-        [Route("{taskItemId}")]
-        public async Task<ActionResult<TaskItem>> GetAsync(int taskItemId)
+        [Route("{issueId}")]
+        public async Task<ActionResult<Issue>> GetAsync(int issueId)
         {
             var taskItem = await _uow.BugTrackerRepository.TaskItems()
-                .FirstOrDefaultAsync(taskItem => taskItem.TaskItemId == taskItemId);
+                .FirstOrDefaultAsync(taskItem => taskItem.IssueId == issueId);
 
             if (taskItem == null)
             {
@@ -34,7 +34,7 @@ namespace BugTracker.WebApplication.Controllers
 
         [HttpGet]
         [Route("taskitems")]
-        public async Task<ActionResult<List<TaskItem>>> GetTaskItemsAsync()
+        public async Task<ActionResult<List<Issue>>> GetTaskItemsAsync()
         {
             var taskItems = _uow.BugTrackerRepository.TaskItems().ToListAsync();
 
@@ -42,14 +42,14 @@ namespace BugTracker.WebApplication.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<TaskItem>> CreateTaskItemAsync([FromBody] TaskItemCreationOptions options)
+        public async Task<ActionResult<Issue>> CreateTaskItemAsync([FromBody] IssueCreationOptions options)
         {
             if(options == null)
             {
                 return BadRequest();
             }
 
-            var taskItem = TaskItem.Save(
+            var issue = Issue.Save(
                 options.Topic,
                 options.Description,
                 options.Status,
@@ -59,20 +59,20 @@ namespace BugTracker.WebApplication.Controllers
                 options.Readiness,
                 options.AffectedVersion);
 
-            if (taskItem.IsFailure)
+            if (issue.IsFailure)
             {
-                return BadRequest(taskItem.Error);
+                return BadRequest(issue.Error);
             }
 
-            _uow.BugTrackerRepository.AddToContext(taskItem.Value);
+            _uow.BugTrackerRepository.AddToContext(issue.Value);
             await _uow.SaveChangesAsync();
 
-            return Ok(taskItem.Value);
+            return Ok(issue.Value);
         }
 
         [HttpPut]
         [Route("{taskItemId}")]
-        public async Task<ActionResult<TaskItem>> UpdateTaskItemAsync(int taskItemId, [FromBody] TaskItemUpdateOptions options)
+        public async Task<ActionResult<Issue>> UpdateTaskItemAsync(int taskItemId, [FromBody] IssueUpdateOptions options)
         {
             if (options == null)
             {
@@ -80,7 +80,7 @@ namespace BugTracker.WebApplication.Controllers
             }
 
             var taskItem = await _uow.BugTrackerRepository.TaskItems()
-                .FirstOrDefaultAsync(taskItem => taskItem.TaskItemId == taskItemId);
+                .FirstOrDefaultAsync(taskItem => taskItem.IssueId == taskItemId);
 
             if(taskItem == null)
             {
@@ -114,7 +114,7 @@ namespace BugTracker.WebApplication.Controllers
         public async Task<ActionResult> DeleteTaskItem(int taskItemId)
         {
             var taskItem = await _uow.BugTrackerRepository.TaskItems()
-                .FirstOrDefaultAsync(taskItem => taskItem.TaskItemId == taskItemId);
+                .FirstOrDefaultAsync(taskItem => taskItem.IssueId == taskItemId);
 
             if(taskItem == null)
             { 
