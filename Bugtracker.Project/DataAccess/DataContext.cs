@@ -39,8 +39,8 @@ namespace Bugtracker.DataAccess
 
             modelBuilder.Entity<ProjectIssueType>()
                 .HasKey(i => i.Id);
-            modelBuilder.Entity<ProjectIssueType>()
-                .HasAlternateKey(i => new { i.ProjectId, i.IssueTypeId });
+            //modelBuilder.Entity<ProjectIssueType>()
+            //    .HasAlternateKey(i => new { i.ProjectId, i.IssueTypeId });
 
             modelBuilder.Entity<ProjectIssueCategory>()
                 .HasKey(i => i.Id);

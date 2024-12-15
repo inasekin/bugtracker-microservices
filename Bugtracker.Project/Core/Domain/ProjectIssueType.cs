@@ -13,12 +13,12 @@ namespace BugTracker.Domain
         /// <summary>
         /// Первичный ключ
         /// </summary>
-        public Guid Id { get; private set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Идентификатор проекта
         /// </summary>
-        public Guid ProjectId { get; private set; }
+        public Guid ProjectId { get; set; }
 
         /// <summary>
         /// Идентификатор типа задачи(Issue)
@@ -27,6 +27,6 @@ namespace BugTracker.Domain
         /// Тип ззадачи, например: Задача, Предложение, Вопрос
         /// TODO: Если примем решение, что тип задачи зашит в коде, как enum, то это просто поменять Guid IssueTypeId => enum IssueType
         /// </remarks>
-        public Guid IssueTypeId { get; private set; }
+        public string IssueType { get; set; }
     }
 }

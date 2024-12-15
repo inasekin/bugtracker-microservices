@@ -14,12 +14,12 @@ namespace BugTracker.Domain
         /// <summary>
         /// Первичный ключ
         /// </summary>
-        public Guid Id { get; private set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Идентификатор проекта для которого создана категория
         /// </summary>
-        public Guid ProjectId { get; private set; }
+        public Guid ProjectId { get; set; }
 
         /// <summary>
         /// Имя категории

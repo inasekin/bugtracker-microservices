@@ -13,21 +13,21 @@ namespace BugTracker.Domain
         /// <summary>
         /// Первичный ключ
         /// </summary>
-        public Guid Id { get; private set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Идентификатор проекта. У каждого проекта свои версии
         /// </summary>
-        public Guid ProjectId { get; private set; }
+        public Guid ProjectId { get; set; }
 
         /// <summary>
         /// Название версии продукта/проекта
         /// </summary>
-        public string Name { get; private set; }
+        public string Name { get; set; }
 
         /// <summary>
         /// Описание версии продукта/проекта
         /// </summary>
-        public string Description { get; private set; }
+        public string Description { get; set; }
     }
 }

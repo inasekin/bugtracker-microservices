@@ -15,22 +15,22 @@ namespace BugTracker.Domain
         /// <summary>
         /// Первичный ключ
         /// </summary>
-        public Guid Id { get; private set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Идентификатор проекта
         /// </summary>
-        public Guid ProjectId { get; private set; }
+        public Guid ProjectId { get; set; }
 
         /// <summary>
         /// Идентификатор пользователя.
         /// В таблице пользователи могут дублироваться, т.к. могут выполнять множество ролей
         /// </summary>
-        public Guid UserId { get; private set; }
+        public Guid UserId { get; set; }
 
         /// <summary>
         /// Идентификатор роли
         /// </summary>
-        public IEnumerable<Guid> RoleId { get; private set; }
+        public Guid RoleId { get; set; }
     }
 }

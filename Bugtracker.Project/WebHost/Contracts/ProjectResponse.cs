@@ -8,10 +8,9 @@ namespace Bugtracker.WebHost.Contracts
         public Guid Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        public string SysId { get; set; }
 
         public List<string> IssueTypes { get; set; }
-        public List<UserRoleResponse> UserRoles { get; set; }
+        public Dictionary<Guid, List<Guid>> UserRoles { get; set; }
         public List<string> Versions { get; set; }
         public List<IssueCategoryResponse> IssueCategories { get; set; }
 

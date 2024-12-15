@@ -1,5 +1,11 @@
+using AutoMapper;
+using Bugtracker.DataAccess;
+using Bugtracker.WebHost.Mapping;
+using BugTracker.DataAccess;
+using BugTracker.DataAccess.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
@@ -21,15 +27,25 @@ namespace PromoCodeFactory.WebHost
         {
             services.AddControllers().AddMvcOptions(x=> 
                 x.SuppressAsyncSuffixInActionNames = false);
-            //services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
-            //services.AddScoped<IDbInitializer, EfDbInitializer>();
-            //services.AddDbContext<DataContext>(x =>
-            //{
-            //    x.UseSqlite("Filename=PromoCodeFactoryDb.sqlite");
+
+            services.AddScoped(typeof(IUnitOfWork), typeof(ProjectRepositoryUnitOfWork));
+            services.AddScoped(typeof(IProjectRepository), typeof(ProjectRepository));
+            services.AddScoped<ProjectsEfDbInitializer>();
+            
+            services.AddDbContext<DataContext>(x =>
+            {
+                x.UseSqlite("Filename=bugtracker-projects.sqlite");
                 //x.UseNpgsql(Configuration.GetConnectionString("PromoCodeFactoryDb"));
-            //    x.UseSnakeCaseNamingConvention();
-            //    x.UseLazyLoadingProxies();
-            //});
+                //    x.UseSnakeCaseNamingConvention();
+                //    x.UseLazyLoadingProxies();
+            });
+
+            var mapperConfiguration = new MapperConfiguration(cfg =>
+            {
+                cfg.AddProfile<ProjectMappingProfile>();
+            });
+            mapperConfiguration.AssertConfigurationIsValid();
+            services.AddSingleton<IMapper>(new Mapper(mapperConfiguration));
 
             services.AddOpenApiDocument(options =>
             {
@@ -39,7 +55,7 @@ namespace PromoCodeFactory.WebHost
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env/*, IDbInitializer dbInitializer*/)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ProjectsEfDbInitializer dbInitializer)
         {
             if (env.IsDevelopment())
             {
@@ -65,7 +81,7 @@ namespace PromoCodeFactory.WebHost
                 endpoints.MapControllers();
             });
             
-            //dbInitializer.InitializeDb();
+            dbInitializer.InitializeDb();
         }
     }
 }

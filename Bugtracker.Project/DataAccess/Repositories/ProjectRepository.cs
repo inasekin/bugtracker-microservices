@@ -21,7 +21,7 @@ namespace BugTracker.DataAccess.Repositories
         {
             return _dataContext.Projects
                 .Where(p => p.Id == id)       
-                .Include(p => p.IssueVersion)
+                .Include(p => p.Versions)
                 .Include(p => p.IssueTypes)
                 .Include(p => p.IssueCategories)
                 .FirstOrDefaultAsync();

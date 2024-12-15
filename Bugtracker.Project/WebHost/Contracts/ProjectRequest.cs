@@ -5,13 +5,14 @@ namespace Bugtracker.WebHost.Contracts
 {
     public class ProjectRequest
     {
+        public Guid Id { get; set; }
         public string Name { get; set; }
-        public string SysId { get; private set; }
         public string Description { get; private set; }
+        public Guid ParentProjectId { get; set; }
 
-        public List<string> IssueTypes { get; set; }
-        public List<Guid> UserRoles { get; set; }
-        public List<string> Versions { get; set; }
-        public List<IssueCategoryRequest> IssueCategories { get; set; }
+        public IEnumerable<string> IssueTypes { get; set; }
+        public IDictionary<Guid, List<Guid>> UserRoles { get; set; }
+        public IEnumerable<string> Versions { get; set; }
+        public IEnumerable<IssueCategoryRequest> IssueCategories { get; set; }
     }
 }

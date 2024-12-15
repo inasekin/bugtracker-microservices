@@ -13,22 +13,17 @@ namespace BugTracker.Domain
         /// <summary>
         /// Первичный ключ
         /// </summary>
-        public Guid Id { get; private set; }
-
-        /// <summary>
-        /// Строковый уникальный id для использования в url и внешних ссылок 
-        /// </summary>
-        public string SysId { get; private set; }
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Имя проекта для отображения
         /// </summary>
-        public string Name { get; private set; }
+        public string Name { get; set; }
 
         /// <summary>
         /// Расширенное описание
         /// </summary>
-        public string Description { get; private set; }
+        public string Description { get; set; }
 
 		// TODO: Насследовать пользователей с родительского проекта
 		// public bool InheritUsers { get; private set; }
@@ -39,22 +34,22 @@ namespace BugTracker.Domain
         /// <summary>
         /// Пользователи проекта и роли в которых они участвуют
         /// </summary>
-		public IEnumerable<ProjectUserRoles> UserRoles { get; private set; }
+		public List<ProjectUserRoles> UserRoles { get; set; }
 
         /// <summary>
         /// Классификатор: категории задач, которые можно создавать в проекте
         /// </summary>
-        public IEnumerable<ProjectIssueCategory> IssueCategories { get; private set; }
+        public List<ProjectIssueCategory> IssueCategories { get; set; }
 
         /// <summary>
         /// Классификатор: Версии, которые есть у текущего проекта
         /// </summary>
-        public IEnumerable<ProjectIssueCategory> IssueVersion { get; private set; }
+        public List<ProjectVersion> Versions { get; set; }
 
         /// <summary>
         /// Классификатор: Типы задач, которые можно создавать/использовать в текущем проекте
         /// </summary>
-        public IEnumerable<ProjectIssueType> IssueTypes { get; private set; }
+        public List<ProjectIssueType> IssueTypes { get; set; }
 
         // Задачи. Если микросервис, то задачи будем получать в репо Задачи
         // public IEnumerable<Guid> Issues { get; private set; }
@@ -65,11 +60,6 @@ namespace BugTracker.Domain
         /// <remarks>
         /// Проекты могут входить друг в друга и наследовать пользователей и права
         /// </remarks>
-        public Project Parent { get; private set; }
-
-        /// <summary>
-        /// Guid родительского проекта
-        /// </summary>
-		public Guid ParentId { get; private set; }
+		public Guid ParentProjectId { get; set; }
 	}
 }
