@@ -17,9 +17,9 @@ namespace BugTracker.Domain
         public Guid Id { get; set; }
 
         /// <summary>
-        /// Идентификатор проекта
+        /// Проект
         /// </summary>
-        public Guid ProjectId { get; set; }
+        public Project Project { get; set; }
 
         /// <summary>
         /// Идентификатор пользователя.

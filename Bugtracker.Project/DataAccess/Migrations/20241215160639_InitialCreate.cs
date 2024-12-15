@@ -30,7 +30,7 @@ namespace DataAccess.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    ProjectId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    ProjectId = table.Column<Guid>(type: "TEXT", nullable: true),
                     Name = table.Column<string>(type: "TEXT", nullable: true),
                     UserId = table.Column<string>(type: "TEXT", nullable: true)
                 },
@@ -41,8 +41,7 @@ namespace DataAccess.Migrations
                         name: "FK_ProjectIssueCategories_Projects_ProjectId",
                         column: x => x.ProjectId,
                         principalTable: "Projects",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -50,7 +49,7 @@ namespace DataAccess.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    ProjectId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    ProjectId = table.Column<Guid>(type: "TEXT", nullable: true),
                     IssueType = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
@@ -60,8 +59,7 @@ namespace DataAccess.Migrations
                         name: "FK_ProjectIssueTypes_Projects_ProjectId",
                         column: x => x.ProjectId,
                         principalTable: "Projects",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -69,20 +67,18 @@ namespace DataAccess.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    ProjectId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    UserId = table.Column<string>(type: "TEXT", nullable: false),
-                    RoleId = table.Column<string>(type: "TEXT", nullable: false)
+                    ProjectId = table.Column<Guid>(type: "TEXT", nullable: true),
+                    UserId = table.Column<string>(type: "TEXT", nullable: true),
+                    RoleId = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ProjectUserRoles", x => x.Id);
-                    table.UniqueConstraint("AK_ProjectUserRoles_ProjectId_UserId_RoleId", x => new { x.ProjectId, x.UserId, x.RoleId });
                     table.ForeignKey(
                         name: "FK_ProjectUserRoles_Projects_ProjectId",
                         column: x => x.ProjectId,
                         principalTable: "Projects",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -90,7 +86,7 @@ namespace DataAccess.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    ProjectId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    ProjectId = table.Column<Guid>(type: "TEXT", nullable: true),
                     Name = table.Column<string>(type: "TEXT", nullable: true),
                     Description = table.Column<string>(type: "TEXT", nullable: true)
                 },
@@ -101,8 +97,7 @@ namespace DataAccess.Migrations
                         name: "FK_ProjectVersions_Projects_ProjectId",
                         column: x => x.ProjectId,
                         principalTable: "Projects",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
@@ -113,6 +108,11 @@ namespace DataAccess.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_ProjectIssueTypes_ProjectId",
                 table: "ProjectIssueTypes",
+                column: "ProjectId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjectUserRoles_ProjectId",
+                table: "ProjectUserRoles",
                 column: "ProjectId");
 
             migrationBuilder.CreateIndex(

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BugTracker.Domain
 {
@@ -17,9 +18,9 @@ namespace BugTracker.Domain
         public Guid Id { get; set; }
 
         /// <summary>
-        /// Идентификатор проекта для которого создана категория
+        /// Проект
         /// </summary>
-        public Guid ProjectId { get; set; }
+        public Guid? ProjectId { get; set; }
 
         /// <summary>
         /// Имя категории

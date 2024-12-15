@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20241215133132_InitialCreate")]
+    [Migration("20241215160639_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -49,7 +49,7 @@ namespace DataAccess.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid>("ProjectId")
+                    b.Property<Guid?>("ProjectId")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("UserId")
@@ -71,7 +71,7 @@ namespace DataAccess.Migrations
                     b.Property<string>("IssueType")
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid>("ProjectId")
+                    b.Property<Guid?>("ProjectId")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -87,20 +87,18 @@ namespace DataAccess.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid>("ProjectId")
+                    b.Property<Guid?>("ProjectId")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("RoleId")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("UserId")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
-                    b.HasAlternateKey("ProjectId", "UserId", "RoleId");
+                    b.HasIndex("ProjectId");
 
                     b.ToTable("ProjectUserRoles");
                 });
@@ -117,7 +115,7 @@ namespace DataAccess.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid>("ProjectId")
+                    b.Property<Guid?>("ProjectId")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -131,36 +129,34 @@ namespace DataAccess.Migrations
                 {
                     b.HasOne("BugTracker.Domain.Project", null)
                         .WithMany("IssueCategories")
-                        .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ProjectId");
                 });
 
             modelBuilder.Entity("BugTracker.Domain.ProjectIssueType", b =>
                 {
-                    b.HasOne("BugTracker.Domain.Project", null)
+                    b.HasOne("BugTracker.Domain.Project", "Project")
                         .WithMany("IssueTypes")
-                        .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ProjectId");
+
+                    b.Navigation("Project");
                 });
 
             modelBuilder.Entity("BugTracker.Domain.ProjectUserRoles", b =>
                 {
-                    b.HasOne("BugTracker.Domain.Project", null)
+                    b.HasOne("BugTracker.Domain.Project", "Project")
                         .WithMany("UserRoles")
-                        .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ProjectId");
+
+                    b.Navigation("Project");
                 });
 
             modelBuilder.Entity("BugTracker.Domain.ProjectVersion", b =>
                 {
-                    b.HasOne("BugTracker.Domain.Project", null)
+                    b.HasOne("BugTracker.Domain.Project", "Project")
                         .WithMany("Versions")
-                        .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ProjectId");
+
+                    b.Navigation("Project");
                 });
 
             modelBuilder.Entity("BugTracker.Domain.Project", b =>

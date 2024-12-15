@@ -38,6 +38,11 @@ namespace BugTracker.DataAccess.Repositories
             _dataContext.Add(entity);
         }
 
+        public void Add(ProjectVersion entity)
+        {
+            _dataContext.Add(entity);
+        }
+
         public void Remove(Project entity)
         {
             _dataContext.Remove(entity);

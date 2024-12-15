@@ -117,14 +117,14 @@ namespace Bugtracker.WebHost.Controllers
             if (request.Versions != null)
             {
                 foreach (string versionId in request.Versions)
-                    project.Versions.Add(new ProjectVersion() { Id = Guid.NewGuid(), Name = versionId, ProjectId = project.Id });
+                    project.Versions.Add(new ProjectVersion() { Id = Guid.NewGuid(), Name = versionId, Project = project });
             }
             
             project.IssueTypes = new List<ProjectIssueType>();
             if (request.IssueTypes != null)
             {
                 foreach (string name in request.IssueTypes)
-                    project.IssueTypes.Add(new ProjectIssueType() { Id = Guid.NewGuid(), IssueType = name, ProjectId = project.Id });
+                    project.IssueTypes.Add(new ProjectIssueType() { Id = Guid.NewGuid(), IssueType = name, Project = project });
             }
 
             project.IssueCategories = new List<ProjectIssueCategory>();
@@ -139,42 +139,57 @@ namespace Bugtracker.WebHost.Controllers
 
         private void MapProject(ProjectRequest request, Project project)
         {
-            List<ProjectVersion> oldVersions = project.Versions;
-            project.Versions = new List<ProjectVersion>();
-            foreach (string name in request.Versions)
+            _mapper.Map<ProjectRequest, Project>(request, project);
+            
+            if (request.Versions != null)
             {
-                project.Versions.Add(new ProjectVersion()
+                List<ProjectVersion> oldVersions = project.Versions;
+                var newVersions = new List<ProjectVersion>();
+                foreach (string name in request.Versions)
                 {
-                    Id = GetOrCreateGuid<ProjectVersion>(oldVersions, i => i.Name == name, i => i.Id),
-                    Name = name,
-                    ProjectId = project.Id
-                });
+                    ProjectVersion oldItem = oldVersions?.FirstOrDefault(i => i.Name == name);
+                    ProjectVersion newItem = oldItem ?? new() { Id = Guid.NewGuid(), Project = project };
+                    newItem.Name = name;
+                    //if (oldItem == null)
+                    //    _projects.Add(newItem);
+
+                    newVersions.Add(newItem);
+                }
+                project.Versions = newVersions;
+            }
+            /*
+            if (request.IssueTypes != null)
+            {
+                List<ProjectIssueType> oldIssueTypes = project.IssueTypes;
+                var newIssueTypes = new List<ProjectIssueType>();
+                foreach (string name in request.IssueTypes)
+                {
+                    newIssueTypes.Add(new ProjectIssueType()
+                    {
+                        Id = GetOrCreateGuid(oldIssueTypes, i => i.IssueType == name, i => i.Id),
+                        IssueType = name,
+                        ProjectId = project.Id
+                    });
+                }
+                project.IssueTypes = newIssueTypes;
             }
 
-            List<ProjectIssueType> oldIssueTypes = project.IssueTypes;
-            project.IssueTypes = new List<ProjectIssueType>();
-            foreach (string name in request.IssueTypes)
+            if (request.IssueCategories != null)
             {
-                project.IssueTypes.Add(new ProjectIssueType()
+                List<ProjectIssueCategory> oldIssueCategories = project.IssueCategories;
+                var newIssueCategories = new List<ProjectIssueCategory>();
+                foreach (var cat in request.IssueCategories)
                 {
-                    Id = GetOrCreateGuid(oldIssueTypes, i => i.IssueType == name, i => i.Id),
-                    IssueType = name,
-                    ProjectId = project.Id
-                });
-            }
-
-            List<ProjectIssueCategory> oldIssueCategories = project.IssueCategories;
-            project.IssueCategories = new List<ProjectIssueCategory>();
-            foreach (var cat in request.IssueCategories)
-            {
-                project.IssueCategories.Add(new ProjectIssueCategory()
-                {
-                    Id = GetOrCreateGuid(oldIssueCategories, i => i.Name == cat.CategoryName, i => i.Id),
-                    Name = cat.CategoryName,
-                    UserId = cat.UserId,
-                    ProjectId = project.Id
-                });
-            }
+                    newIssueCategories.Add(new ProjectIssueCategory()
+                    {
+                        Id = GetOrCreateGuid(oldIssueCategories, i => i.Name == cat.CategoryName, i => i.Id),
+                        Name = cat.CategoryName,
+                        UserId = cat.UserId,
+                        ProjectId = project.Id
+                    });
+                }
+                project.IssueCategories = newIssueCategories;
+            }*/
         }
 
         private Guid GetOrCreateGuid<T>(IEnumerable<T> col, Func<T, bool> predicate, Func<T, Guid> selector)
