@@ -1,14 +1,15 @@
-﻿using System;
+﻿using BugTracker.Domain;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace BugTracker.DataAccess
 {
-    public interface IProjectRepository<T> where T : class
+    public interface IProjectRepository
     {
-	    Task<T> GetAsync(Guid id);
-    	Task<IEnumerable<T>> GetAllAsync(Guid id);
-        void Add(T entity);
-        void Remove(T entity);
-     }
+	    Task<Project> GetAsync(Guid id);
+    	Task<IEnumerable<Project>> GetAllAsync();
+        void Add(Project entity);
+        void Remove(Project entity);
+    }
 }

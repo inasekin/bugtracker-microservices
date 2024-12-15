@@ -4,9 +4,9 @@ using System.Collections.Generic;
 namespace BugTracker.Domain
 {
 	/// <summary>
-	/// Класс сущности Проект.
+	/// сущность Проект.
 	/// Основная единица на которую выдаются права и пользователи и производится конфигурация.
-	/// Проекты могут входить друг в друга тем самым наследуя пользователей и настройки.
+	/// Проекты могут входить друг в друга тем самым наследуя пользователей и настройки
 	/// </summary>
     public class Project
     {
@@ -39,23 +39,37 @@ namespace BugTracker.Domain
         /// <summary>
         /// Пользователи проекта и роли в которых они участвуют
         /// </summary>
-		public IEnumerable<ProjectUser> Users { get; private set; }
+		public IEnumerable<ProjectUserRoles> UserRoles { get; private set; }
+
+        /// <summary>
+        /// Классификатор: категории задач, которые можно создавать в проекте
+        /// </summary>
+        public IEnumerable<ProjectIssueCategory> IssueCategories { get; private set; }
+
+        /// <summary>
+        /// Классификатор: Версии, которые есть у текущего проекта
+        /// </summary>
+        public IEnumerable<ProjectIssueCategory> IssueVersion { get; private set; }
+
+        /// <summary>
+        /// Классификатор: Типы задач, которые можно создавать/использовать в текущем проекте
+        /// </summary>
+        public IEnumerable<ProjectIssueType> IssueTypes { get; private set; }
 
         // Задачи. Если микросервис, то задачи будем получать в репо Задачи
         // public IEnumerable<Guid> Issues { get; private set; }
 
-        // TODO: Категории задач, которые можно создавать в проекте
-        //public IEnumerable<IssueCategory> IssueCategories { get; private set; }
-
         /// <summary>
         /// Родительский проект
         /// </summary>
+        /// <remarks>
+        /// Проекты могут входить друг в друга и наследовать пользователей и права
+        /// </remarks>
         public Project Parent { get; private set; }
-		public Project ParentId { get; private set; }
-	
+
         /// <summary>
-        /// Техническое поле версии объекта
+        /// Guid родительского проекта
         /// </summary>
-        public int Version { get; private set; }
-    }
+		public Guid ParentId { get; private set; }
+	}
 }

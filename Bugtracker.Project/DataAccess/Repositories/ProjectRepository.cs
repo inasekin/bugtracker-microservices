@@ -2,28 +2,44 @@
 using System.Collections.Generic;
 using System;
 using BugTracker.Domain;
+using Bugtracker.DataAccess;
+using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace BugTracker.DataAccess.Repositories
 {
-    // TODO: Enitity Framework repository
-    public class ProjectRepository : IProjectRepository<Project> 
+    public class ProjectRepository : IProjectRepository
     {
-        public Task<Project> GetAsync(Guid id)
+        private readonly DataContext _dataContext;
+
+        public ProjectRepository(DataContext dataContext)
         {
-	        return Task.FromResult<Project>(null);
+            _dataContext = dataContext;
         }
 
-        public Task<IEnumerable<Project>> GetAllAsync(Guid id)
+        public Task<Project> GetAsync(Guid id)
         {
-	        return Task.FromResult<IEnumerable<Project>>(null);
+            return _dataContext.Projects
+                .Where(p => p.Id == id)       
+                .Include(p => p.IssueVersion)
+                .Include(p => p.IssueTypes)
+                .Include(p => p.IssueCategories)
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<IEnumerable<Project>> GetAllAsync()
+        {
+            return await _dataContext.Projects.ToListAsync();
         }
 
         public void Add(Project entity)
         {
+            _dataContext.Add(entity);
         }
 
         public void Remove(Project entity)
         {
+            _dataContext.Remove(entity);
         }
     }
 }
