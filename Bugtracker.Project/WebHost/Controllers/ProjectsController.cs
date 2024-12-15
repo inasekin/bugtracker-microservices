@@ -51,13 +51,6 @@ namespace Bugtracker.WebHost.Controllers
         [HttpPost]
         public async Task<ActionResult<ProjectResponse>> CreateProjectAsync(ProjectRequest request)        
         {
-            if (request.Id != Guid.Empty)
-            {
-                var projectExist = await _projects.GetAsync(request.Id);
-                if (projectExist == null)
-                    return Conflict(); // Already exist
-            }
-
             Project project = MapProject(request);
             _projects.Add(project);
 
@@ -69,12 +62,11 @@ namespace Bugtracker.WebHost.Controllers
         [HttpPut("{id:guid}")]
         public async Task<IActionResult> UpdateProjectAsync(Guid id, ProjectRequest request)
         {
-            var project = await _projects.GetAsync(request.Id);
+            var project = await _projects.GetAsync(id);
             if (project== null)
                 return NotFound();
             
             MapProject(request, project);
-            _projects.Add(project);
 
             await _unitOfWork.SaveChangesAsync();
 
@@ -84,12 +76,12 @@ namespace Bugtracker.WebHost.Controllers
         [HttpDelete("{id:guid}")]
         public async Task<IActionResult> DeleteProjectAsync(Guid id)
         {
-            var customer = await _projects.GetAsync(id);
+            var project = await _projects.GetAsync(id);
             
-            if (customer == null)
+            if (project == null)
                 return NotFound();
 
-            _projects.Remove(customer);
+            _projects.Remove(project);
             await _unitOfWork.SaveChangesAsync();
 
             return NoContent();
@@ -99,16 +91,19 @@ namespace Bugtracker.WebHost.Controllers
         private ProjectResponse MapProject(Project project)
         {
             ProjectResponse response = _mapper.Map<Project, ProjectResponse>(project);
-            response.UserRoles = new();
-            foreach (var ur in project.UserRoles)
+            if (project.UserRoles != null)
             {
-                List<Guid> roles = null;
-                if (response.UserRoles.TryGetValue(ur.UserId, out roles) == false)
+                response.UserRoles = new();
+                foreach (var ur in project.UserRoles)
                 {
-                    roles = new List<Guid>();
-                    response.UserRoles.Add(ur.UserId, roles);
+                    List<string> roles = null;
+                    if (response.UserRoles.TryGetValue(ur.UserId, out roles) == false)
+                    {
+                        roles = new List<string>();
+                        response.UserRoles.Add(ur.UserId, roles);
+                    }
+                    roles.Add(ur.RoleId);
                 }
-                roles.Add(ur.RoleId);
             }
             return response;
         }
@@ -116,16 +111,29 @@ namespace Bugtracker.WebHost.Controllers
         private Project MapProject(ProjectRequest request)
         {
             Project project = _mapper.Map<ProjectRequest, Project>(request);
-            if (project.Id == Guid.Empty)
-                project.Id = Guid.NewGuid();
+            project.Id = Guid.NewGuid();
+
             project.Versions = new List<ProjectVersion>();
-            foreach (string versionId in request.Versions)
-                project.Versions.Add(new ProjectVersion() { Id = Guid.NewGuid(), Name = versionId, ProjectId = project.Id });
+            if (request.Versions != null)
+            {
+                foreach (string versionId in request.Versions)
+                    project.Versions.Add(new ProjectVersion() { Id = Guid.NewGuid(), Name = versionId, ProjectId = project.Id });
+            }
+            
             project.IssueTypes = new List<ProjectIssueType>();
-            foreach (string name in request.IssueTypes)
-                project.IssueTypes.Add(new ProjectIssueType() { Id = Guid.NewGuid(), IssueType = name, ProjectId = project.Id });
-            foreach (IssueCategoryRequest cat in request.IssueCategories)
-                project.IssueCategories.Add(new ProjectIssueCategory() { Id = Guid.NewGuid(), Name = cat.CategoryName, UserId = cat.UserId, ProjectId = project.Id });
+            if (request.IssueTypes != null)
+            {
+                foreach (string name in request.IssueTypes)
+                    project.IssueTypes.Add(new ProjectIssueType() { Id = Guid.NewGuid(), IssueType = name, ProjectId = project.Id });
+            }
+
+            project.IssueCategories = new List<ProjectIssueCategory>();
+            if (request.IssueCategories != null)
+            {
+                foreach (IssueCategoryRequest cat in request.IssueCategories)
+                    project.IssueCategories.Add(new ProjectIssueCategory() { Id = Guid.NewGuid(), Name = cat.CategoryName, UserId = cat.UserId, ProjectId = project.Id });
+            }
+
             return project;
         }
 

@@ -29,5 +29,16 @@ namespace BugTracker.Domain
         /// Описание версии продукта/проекта
         /// </summary>
         public string Description { get; set; }
+
+        ///// <summary>
+        ///// Статус: Открыт, заблокирован, закрыт
+        ///// </summary>
+        //public string Status { get; set; }
+
+        ///// <summary>
+        ///// Начало этапа
+        ///// </summary>
+        //public DateTime StartDate { get; set; }
+
     }
 }

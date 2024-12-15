@@ -24,6 +24,7 @@ namespace BugTracker.DataAccess.Repositories
                 .Include(p => p.Versions)
                 .Include(p => p.IssueTypes)
                 .Include(p => p.IssueCategories)
+                .AsSplitQuery()
                 .FirstOrDefaultAsync();
         }
 

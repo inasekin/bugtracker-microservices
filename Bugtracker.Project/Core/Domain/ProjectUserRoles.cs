@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace BugTracker.Domain
 {
@@ -26,11 +25,11 @@ namespace BugTracker.Domain
         /// Идентификатор пользователя.
         /// В таблице пользователи могут дублироваться, т.к. могут выполнять множество ролей
         /// </summary>
-        public Guid UserId { get; set; }
+        public string UserId { get; set; }
 
         /// <summary>
         /// Идентификатор роли
         /// </summary>
-        public Guid RoleId { get; set; }
+        public string RoleId { get; set; }
     }
 }

@@ -60,6 +60,6 @@ namespace BugTracker.Domain
         /// <remarks>
         /// Проекты могут входить друг в друга и наследовать пользователей и права
         /// </remarks>
-		public Guid ParentProjectId { get; set; }
+		public Guid? ParentProjectId { get; set; }
 	}
 }

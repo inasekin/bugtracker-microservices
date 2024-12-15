@@ -35,6 +35,7 @@ namespace BugTracker.Domain
         /// <remarks>
         /// Каждой категории назначается ответственный человек, и при выборе категории для задачи, автоматически наначается пользователь
         /// </remarks>
-        public Guid UserId { get; set; }
+#nullable enable
+        public string? UserId { get; set; }
     }
 }

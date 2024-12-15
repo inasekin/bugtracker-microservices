@@ -15,8 +15,7 @@ namespace Bugtracker.DataAccess
         
         public void InitializeDb()
         {
-            Console.WriteLine("Recreate database, apply migrations and add sample data!");
-            _dataContext.Database.EnsureDeleted();
+            //_dataContext.Database.EnsureDeleted();
             // EnsureCreated применяет миграции, но на всякий случай, чтобы дз засчитали
             _dataContext.Database.EnsureCreated();
             //_dataContext.Database.Migrate();

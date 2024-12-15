@@ -6,6 +6,7 @@ namespace Bugtracker.WebHost.Contracts
     {
         public string CategoryName { get; set; }
 
-        public Guid UserId { get; set; }
+#nullable enable
+        public string? UserId { get; set; }
     }
 }
