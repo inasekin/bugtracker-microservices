@@ -54,15 +54,14 @@ namespace Bugtracker.WebHost.Controllers
         [HttpPost]
         public async Task<ActionResult<ProjectResponse>> CreateProjectAsync(ProjectRequest request)        
         {
-            Project project = _projects.Add(new() { Id = Guid.NewGuid() });
+            Project project = _projects.Add(new());
             MapProject(request, project);
-            _projects.Add(project);
 
             await _unitOfWork.SaveChangesAsync();
 
             return CreatedAtAction(nameof(GetProjectAsync), new {id = project.Id}, null);
         }
-        
+
         [HttpPut("{id:guid}")]
         public async Task<IActionResult> UpdateProjectAsync(Guid id, ProjectRequest request)
         {
@@ -119,25 +118,22 @@ namespace Bugtracker.WebHost.Controllers
                 request.Versions, // from
                 project.Versions, // to
                 (dto, model) => dto == model.Name, // compare
-                () => new ProjectVersion(), // {}, // create 
                 (dto, model) => model.Name = dto); // update
 
             project.IssueTypes = MapCollection(
                 request.IssueTypes, 
                 project.IssueTypes,
                 (dto, model) => dto == model.IssueType,
-                () => new ProjectIssueType(),
                 (dto, model) => model.IssueType = dto);
 
             project.IssueCategories = MapCollection(
                 request.IssueCategories, 
                 project.IssueCategories,
                 (dto, model) => dto.CategoryName == model.Name,
-                () => new ProjectIssueCategory(),
                 (dto, model) => _mapper.Map(dto, model));
         }
 
-        private List<TModel> MapCollection<TDto, TModel>(IEnumerable<TDto> dtoCollection, IEnumerable<TModel> modelCollection, Func<TDto, TModel, bool> predicate, Func<TModel> createModel, Action<TDto, TModel> map) where TModel : BaseEntity
+        private List<TModel> MapCollection<TDto, TModel>(IEnumerable<TDto> dtoCollection, IEnumerable<TModel> modelCollection, Func<TDto, TModel, bool> predicate, Action<TDto, TModel> map) where TModel : BaseEntity, new()
         {
             if(dtoCollection == null)
                 return modelCollection?.ToList();
@@ -146,7 +142,7 @@ namespace Bugtracker.WebHost.Controllers
             foreach (TDto item in dtoCollection)
             {
                 TModel oldItem = oldItems?.FirstOrDefault(i => predicate(item, i));
-                TModel newItem = oldItem ?? createModel();
+                TModel newItem = oldItem ?? new();
                 map(item, newItem);
                 newItems.Add(newItem);
             }
