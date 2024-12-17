@@ -18,11 +18,14 @@ namespace Bugtracker.WebHost.Controllers
     public class ProjectsController
         : ControllerBase
     {
-        private readonly IProjectRepository _projects;
+        private readonly IRepository<Project> _projects;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public ProjectsController(IProjectRepository projects, IUnitOfWork unitOfWork, IMapper mapper)
+        public ProjectsController(
+            IRepository<Project> projects,
+            IUnitOfWork unitOfWork, 
+            IMapper mapper)
         {
             _projects = projects;
             _unitOfWork = unitOfWork;
@@ -51,7 +54,8 @@ namespace Bugtracker.WebHost.Controllers
         [HttpPost]
         public async Task<ActionResult<ProjectResponse>> CreateProjectAsync(ProjectRequest request)        
         {
-            Project project = MapProject(request);
+            Project project = _projects.Add(new() { Id = Guid.NewGuid() });
+            MapProject(request, project);
             _projects.Add(project);
 
             await _unitOfWork.SaveChangesAsync();
@@ -96,8 +100,7 @@ namespace Bugtracker.WebHost.Controllers
                 response.UserRoles = new();
                 foreach (var ur in project.UserRoles)
                 {
-                    List<string> roles = null;
-                    if (response.UserRoles.TryGetValue(ur.UserId, out roles) == false)
+                    if (response.UserRoles.TryGetValue(ur.UserId, out List<string> roles) == false)
                     {
                         roles = new List<string>();
                         response.UserRoles.Add(ur.UserId, roles);
@@ -107,98 +110,47 @@ namespace Bugtracker.WebHost.Controllers
             }
             return response;
         }
-
-        private Project MapProject(ProjectRequest request)
-        {
-            Project project = _mapper.Map<ProjectRequest, Project>(request);
-            project.Id = Guid.NewGuid();
-
-            project.Versions = new List<ProjectVersion>();
-            if (request.Versions != null)
-            {
-                foreach (string versionId in request.Versions)
-                    project.Versions.Add(new ProjectVersion() { Id = Guid.NewGuid(), Name = versionId, Project = project });
-            }
-            
-            project.IssueTypes = new List<ProjectIssueType>();
-            if (request.IssueTypes != null)
-            {
-                foreach (string name in request.IssueTypes)
-                    project.IssueTypes.Add(new ProjectIssueType() { Id = Guid.NewGuid(), IssueType = name, Project = project });
-            }
-
-            project.IssueCategories = new List<ProjectIssueCategory>();
-            if (request.IssueCategories != null)
-            {
-                foreach (IssueCategoryRequest cat in request.IssueCategories)
-                    project.IssueCategories.Add(new ProjectIssueCategory() { Id = Guid.NewGuid(), Name = cat.CategoryName, UserId = cat.UserId, ProjectId = project.Id });
-            }
-
-            return project;
-        }
-
+        
         private void MapProject(ProjectRequest request, Project project)
         {
-            _mapper.Map<ProjectRequest, Project>(request, project);
-            
-            if (request.Versions != null)
-            {
-                List<ProjectVersion> oldVersions = project.Versions;
-                var newVersions = new List<ProjectVersion>();
-                foreach (string name in request.Versions)
-                {
-                    ProjectVersion oldItem = oldVersions?.FirstOrDefault(i => i.Name == name);
-                    ProjectVersion newItem = oldItem ?? new() { Id = Guid.NewGuid(), Project = project };
-                    newItem.Name = name;
-                    //if (oldItem == null)
-                    //    _projects.Add(newItem);
+            _mapper.Map(request, project);
 
-                    newVersions.Add(newItem);
-                }
-                project.Versions = newVersions;
-            }
-            /*
-            if (request.IssueTypes != null)
-            {
-                List<ProjectIssueType> oldIssueTypes = project.IssueTypes;
-                var newIssueTypes = new List<ProjectIssueType>();
-                foreach (string name in request.IssueTypes)
-                {
-                    newIssueTypes.Add(new ProjectIssueType()
-                    {
-                        Id = GetOrCreateGuid(oldIssueTypes, i => i.IssueType == name, i => i.Id),
-                        IssueType = name,
-                        ProjectId = project.Id
-                    });
-                }
-                project.IssueTypes = newIssueTypes;
-            }
+            project.Versions = MapCollection(
+                request.Versions, // from
+                project.Versions, // to
+                (dto, model) => dto == model.Name, // compare
+                () => new ProjectVersion(), // {}, // create 
+                (dto, model) => model.Name = dto); // update
 
-            if (request.IssueCategories != null)
-            {
-                List<ProjectIssueCategory> oldIssueCategories = project.IssueCategories;
-                var newIssueCategories = new List<ProjectIssueCategory>();
-                foreach (var cat in request.IssueCategories)
-                {
-                    newIssueCategories.Add(new ProjectIssueCategory()
-                    {
-                        Id = GetOrCreateGuid(oldIssueCategories, i => i.Name == cat.CategoryName, i => i.Id),
-                        Name = cat.CategoryName,
-                        UserId = cat.UserId,
-                        ProjectId = project.Id
-                    });
-                }
-                project.IssueCategories = newIssueCategories;
-            }*/
+            project.IssueTypes = MapCollection(
+                request.IssueTypes, 
+                project.IssueTypes,
+                (dto, model) => dto == model.IssueType,
+                () => new ProjectIssueType(),
+                (dto, model) => model.IssueType = dto);
+
+            project.IssueCategories = MapCollection(
+                request.IssueCategories, 
+                project.IssueCategories,
+                (dto, model) => dto.CategoryName == model.Name,
+                () => new ProjectIssueCategory(),
+                (dto, model) => _mapper.Map(dto, model));
         }
 
-        private Guid GetOrCreateGuid<T>(IEnumerable<T> col, Func<T, bool> predicate, Func<T, Guid> selector)
+        private List<TModel> MapCollection<TDto, TModel>(IEnumerable<TDto> dtoCollection, IEnumerable<TModel> modelCollection, Func<TDto, TModel, bool> predicate, Func<TModel> createModel, Action<TDto, TModel> map) where TModel : BaseEntity
         {
-            T o = col.FirstOrDefault(predicate);
-            if (o == null)
-                return Guid.NewGuid();
-            else
-                return selector(o);
+            if(dtoCollection == null)
+                return modelCollection?.ToList();
+            IEnumerable<TModel> oldItems = modelCollection;
+            List<TModel> newItems = new();
+            foreach (TDto item in dtoCollection)
+            {
+                TModel oldItem = oldItems?.FirstOrDefault(i => predicate(item, i));
+                TModel newItem = oldItem ?? createModel();
+                map(item, newItem);
+                newItems.Add(newItem);
+            }
+            return newItems;
         }
 
         #endregion

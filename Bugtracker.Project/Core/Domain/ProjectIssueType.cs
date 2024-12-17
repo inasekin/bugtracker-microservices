@@ -8,13 +8,8 @@ namespace BugTracker.Domain
     /// <remarks>
     /// В каждый проект могут входить свои типы задач, например: Задача, Предложение, Вопрос
     /// </remarks>
-    public class ProjectIssueType
+    public class ProjectIssueType : BaseEntity
     {
-        /// <summary>
-        /// Первичный ключ
-        /// </summary>
-        public Guid Id { get; set; }
-
         /// <summary>
         /// Проект
         /// </summary>

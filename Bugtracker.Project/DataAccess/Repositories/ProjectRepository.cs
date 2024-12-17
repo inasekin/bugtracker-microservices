@@ -1,25 +1,22 @@
 ﻿using System.Threading.Tasks;
-using System.Collections.Generic;
 using System;
 using BugTracker.Domain;
 using Bugtracker.DataAccess;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace BugTracker.DataAccess.Repositories
 {
-    public class ProjectRepository : IProjectRepository
+    public class ProjectRepository : Repository<Project>, IRepository<Project>
     {
-        private readonly DataContext _dataContext;
-
-        public ProjectRepository(DataContext dataContext)
-        {
-            _dataContext = dataContext;
+        public ProjectRepository(DataContext dataContext) : base(dataContext) {
         }
 
-        public Task<Project> GetAsync(Guid id)
+        override public Task<Project> GetAsync(Guid id)
         {
-            return _dataContext.Projects
+            return _dbSet
                 .Where(p => p.Id == id)       
                 .Include(p => p.Versions)
                 .Include(p => p.IssueTypes)
@@ -28,24 +25,25 @@ namespace BugTracker.DataAccess.Repositories
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<IEnumerable<Project>> GetAllAsync()
+        virtual public void Update(Project entity)
         {
-            return await _dataContext.Projects.ToListAsync();
+            // _dbSet.Update(entity);
+            AddIfNotInContext(entity.Versions);
+            AddIfNotInContext(entity.IssueTypes);
+            AddIfNotInContext(entity.IssueCategories);
+            AddIfNotInContext(entity.UserRoles);
         }
 
-        public void Add(Project entity)
+        private void AddIfNotInContext<T>(IEnumerable<T> col) where T : BaseEntity
         {
-            _dataContext.Add(entity);
-        }
-
-        public void Add(ProjectVersion entity)
-        {
-            _dataContext.Add(entity);
-        }
-
-        public void Remove(Project entity)
-        {
-            _dataContext.Remove(entity);
+            if (col != null)
+            {
+                foreach (var ent in col)
+                {
+                    if (!_dataContext.Set<T>().Local.Any(e => e == ent))
+                        _dataContext.Add(ent);
+                }
+            }
         }
     }
 }

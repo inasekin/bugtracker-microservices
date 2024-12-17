@@ -9,13 +9,8 @@ namespace BugTracker.Domain
     /// В одном проекте пользователь может выполнять разные роли, например: Тестироващик, Руководитель проекта, Разработчик.
     /// Каждая роль обладает определенным набором прав
     /// </remarks>
-    public class ProjectUserRoles
+    public class ProjectUserRoles : BaseEntity
     {
-        /// <summary>
-        /// Первичный ключ
-        /// </summary>
-        public Guid Id { get; set; }
-
         /// <summary>
         /// Проект
         /// </summary>

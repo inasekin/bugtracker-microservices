@@ -10,13 +10,8 @@ namespace BugTracker.Domain
     /// Категории задач, это распределение по модулям/сервисам/функционалу. Например: Модуль Wiki, Модуль Управление пользователями
     /// Каждой категории назначается ответственный человек, и при выборе категории для задачи, автоматически наначается пользователь
     /// </remarks>
-    public class ProjectIssueCategory
+    public class ProjectIssueCategory : BaseEntity
     {
-        /// <summary>
-        /// Первичный ключ
-        /// </summary>
-        public Guid Id { get; set; }
-
         /// <summary>
         /// Проект
         /// </summary>

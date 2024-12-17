@@ -16,11 +16,6 @@ namespace Bugtracker.DataAccess
 
         public DbSet<ProjectVersion> ProjectVersions { get; set; }
 
-        public DataContext()
-        {
-            
-        }
-        
         public DataContext(DbContextOptions<DataContext> options)
             : base(options)
         {

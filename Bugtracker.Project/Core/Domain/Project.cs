@@ -8,13 +8,8 @@ namespace BugTracker.Domain
 	/// Основная единица на которую выдаются права и пользователи и производится конфигурация.
 	/// Проекты могут входить друг в друга тем самым наследуя пользователей и настройки
 	/// </summary>
-    public class Project
+    public class Project : BaseEntity
     {
-        /// <summary>
-        /// Первичный ключ
-        /// </summary>
-        public Guid Id { get; set; }
-
         /// <summary>
         /// Имя проекта для отображения
         /// </summary>

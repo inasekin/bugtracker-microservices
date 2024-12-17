@@ -1,7 +1,8 @@
 ﻿using System.Threading.Tasks;
 using Bugtracker.DataAccess;
+using BugTracker.DataAccess;
 
-namespace BugTracker.DataAccess.Repositories
+namespace DataAccess
 {
     public class ProjectRepositoryUnitOfWork : IUnitOfWork
     {

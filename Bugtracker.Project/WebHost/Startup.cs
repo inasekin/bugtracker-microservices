@@ -3,6 +3,8 @@ using Bugtracker.DataAccess;
 using Bugtracker.WebHost.Mapping;
 using BugTracker.DataAccess;
 using BugTracker.DataAccess.Repositories;
+using BugTracker.Domain;
+using DataAccess;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -29,7 +31,9 @@ namespace PromoCodeFactory.WebHost
                 x.SuppressAsyncSuffixInActionNames = false);
 
             services.AddScoped(typeof(IUnitOfWork), typeof(ProjectRepositoryUnitOfWork));
-            services.AddScoped(typeof(IProjectRepository), typeof(ProjectRepository));
+            services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+            services.AddScoped(typeof(IRepository<Project>), typeof(ProjectRepository));
+
             services.AddScoped<ProjectsEfDbInitializer>();
             
             services.AddDbContext<DataContext>(x =>
