@@ -35,11 +35,6 @@ namespace BugTracker.DataAccess.Repositories
             return _dbSet.Add(entity).Entity;
         }
 
-        virtual public void Update(T entity)
-        {
-            _dbSet.Update(entity);
-        }
-
         virtual public void Remove(T entity)
         {
             _dbSet.Remove(entity);

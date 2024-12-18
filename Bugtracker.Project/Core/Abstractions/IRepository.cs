@@ -11,6 +11,5 @@ namespace BugTracker.DataAccess
     	Task<IEnumerable<T>> GetAllAsync();
         T Add(T entity);
         void Remove(T entity);
-        void Update(T entity);
     }
 }

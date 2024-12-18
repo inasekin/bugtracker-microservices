@@ -21,29 +21,9 @@ namespace BugTracker.DataAccess.Repositories
                 .Include(p => p.Versions)
                 .Include(p => p.IssueTypes)
                 .Include(p => p.IssueCategories)
+                .Include(p => p.UserRoles)
                 .AsSplitQuery()
                 .FirstOrDefaultAsync();
-        }
-
-        virtual public void Update(Project entity)
-        {
-            // _dbSet.Update(entity);
-            AddIfNotInContext(entity.Versions);
-            AddIfNotInContext(entity.IssueTypes);
-            AddIfNotInContext(entity.IssueCategories);
-            AddIfNotInContext(entity.UserRoles);
-        }
-
-        private void AddIfNotInContext<T>(IEnumerable<T> col) where T : BaseEntity
-        {
-            if (col != null)
-            {
-                foreach (var ent in col)
-                {
-                    if (!_dataContext.Set<T>().Local.Any(e => e == ent))
-                        _dataContext.Add(ent);
-                }
-            }
         }
     }
 }

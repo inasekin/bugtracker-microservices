@@ -94,6 +94,7 @@ namespace Bugtracker.WebHost.Controllers
         private ProjectResponse MapProject(Project project)
         {
             ProjectResponse response = _mapper.Map<Project, ProjectResponse>(project);
+
             if (project.UserRoles != null)
             {
                 response.UserRoles = new();
@@ -131,6 +132,31 @@ namespace Bugtracker.WebHost.Controllers
                 project.IssueCategories,
                 (dto, model) => dto.CategoryName == model.Name,
                 (dto, model) => _mapper.Map(dto, model));
+
+            // Для пользователей и ролей сложный mapping Dict<string,List> => List
+            if (request.UserRoles != null)
+            {
+                project.UserRoles = new();
+                foreach (var ur in request.UserRoles)
+                {
+                    string userId = ur.Key;
+                    List<string> roles = ur.Value;
+                    foreach(string role in roles)
+                    {
+                        var u = project.UserRoles.FirstOrDefault(ur => ur.UserId == userId && ur.RoleId == role);
+                        if (u != null)
+                            project.UserRoles.Add(u);
+                        else
+                        {
+                            project.UserRoles.Add(new()
+                            {
+                                UserId = userId,
+                                RoleId = role
+                            });
+                        }
+                    }
+                }
+            }
         }
 
         private List<TModel> MapCollection<TDto, TModel>(IEnumerable<TDto> dtoCollection, IEnumerable<TModel> modelCollection, Func<TDto, TModel, bool> predicate, Action<TDto, TModel> map) where TModel : BaseEntity, new()

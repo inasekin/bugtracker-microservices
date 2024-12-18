@@ -1,7 +1,7 @@
 # TODO. Список задач:
 
-- Реализовать Update для UserRoles
-- Протестировать Update для Categories и Types
++ Реализовать Update для UserRoles
++ Протестировать Update для Categories и Types
 - Написать README.md с описанием сервиса и сущностей
 - Каскадное удаление добавить, т.к. не удаляются версии, и т.д.
 - Написать unit тест для Post, Update, Get, GetAll
