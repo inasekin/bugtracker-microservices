@@ -136,6 +136,7 @@ namespace Bugtracker.WebHost.Controllers
             // Для пользователей и ролей сложный mapping Dict<string,List> => List
             if (request.UserRoles != null)
             {
+                var oldUserRoles = project.UserRoles;
                 project.UserRoles = new();
                 foreach (var ur in request.UserRoles)
                 {
@@ -143,7 +144,7 @@ namespace Bugtracker.WebHost.Controllers
                     List<string> roles = ur.Value;
                     foreach(string role in roles)
                     {
-                        var u = project.UserRoles.FirstOrDefault(ur => ur.UserId == userId && ur.RoleId == role);
+                        var u = oldUserRoles.FirstOrDefault(ur => ur.UserId == userId && ur.RoleId == role);
                         if (u != null)
                             project.UserRoles.Add(u);
                         else
