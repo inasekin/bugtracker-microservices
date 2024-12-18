@@ -3,28 +3,37 @@
 namespace BugTracker.Domain
 {
     /// <summary>
-	/// Связь проекта с разрешенными типами задач
+	/// Классификатор версия проекта
 	/// </summary>
-    public class ProjectVersion
+    /// <remarks>Версии проекта это просто атрибут список тегов для удобства: "1.0", "1.2", "2.0".
+    /// Обычно когда создается задача присваиваются версии в которых нужно исправить ошибку,
+    /// кроме того можно отображать ошибки присущие только определенной версии, либо перебрасывать задачи пожелания на следующую версию</remarks>
+    public class ProjectVersion : BaseEntity
     {
         /// <summary>
-        /// Первичный ключ
+        /// Проект
         /// </summary>
-        public Guid Id { get; private set; }
+        public Project Project { get; set; }
 
         /// <summary>
         /// Название версии продукта/проекта
         /// </summary>
-        public string Name { get; private set; }
+        public string Name { get; set; }
 
         /// <summary>
         /// Описание версии продукта/проекта
         /// </summary>
-        public string Description { get; private set; }
+        public string Description { get; set; }
 
-        /// <summary>
-        /// Идентификатор проекта. У каждого проекта свои версии
-        /// </summary>
-        public Guid ProjectId { get; private set; }
+        ///// <summary>
+        ///// Статус: Открыт, заблокирован, закрыт
+        ///// </summary>
+        //public string Status { get; set; }
+
+        ///// <summary>
+        ///// Начало этапа
+        ///// </summary>
+        //public DateTime StartDate { get; set; }
+
     }
 }

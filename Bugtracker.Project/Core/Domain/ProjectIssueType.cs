@@ -5,21 +5,23 @@ namespace BugTracker.Domain
     /// <summary>
 	/// Связь проекта с разрешенными типами задач
 	/// </summary>
-    public class ProjectIssueType
+    /// <remarks>
+    /// В каждый проект могут входить свои типы задач, например: Задача, Предложение, Вопрос
+    /// </remarks>
+    public class ProjectIssueType : BaseEntity
     {
         /// <summary>
-        /// Первичный ключ
+        /// Проект
         /// </summary>
-        public Guid Id { get; private set; }
+        public Project Project { get; set; }
 
         /// <summary>
-        /// Идентификатор проекта
+        /// Идентификатор типа задачи(Issue)
         /// </summary>
-        public Guid ProjectId { get; private set; }
-
-        /// <summary>
-        /// Идентификатор типа Issue
-        /// </summary>
-        public Guid IssueTypeId { get; private set; }
+        /// <remarks>
+        /// Тип ззадачи, например: Задача, Предложение, Вопрос
+        /// TODO: Если примем решение, что тип задачи зашит в коде, как enum, то это просто поменять Guid IssueTypeId => enum IssueType
+        /// </remarks>
+        public string IssueType { get; set; }
     }
 }

@@ -4,31 +4,21 @@ using System.Collections.Generic;
 namespace BugTracker.Domain
 {
 	/// <summary>
-	/// Класс сущности Проект.
+	/// сущность Проект.
 	/// Основная единица на которую выдаются права и пользователи и производится конфигурация.
-	/// Проекты могут входить друг в друга тем самым наследуя пользователей и настройки.
+	/// Проекты могут входить друг в друга тем самым наследуя пользователей и настройки
 	/// </summary>
-    public class Project
+    public class Project : BaseEntity
     {
-        /// <summary>
-        /// Первичный ключ
-        /// </summary>
-        public Guid Id { get; private set; }
-
-        /// <summary>
-        /// Строковый уникальный id для использования в url и внешних ссылок 
-        /// </summary>
-        public string SysId { get; private set; }
-
         /// <summary>
         /// Имя проекта для отображения
         /// </summary>
-        public string Name { get; private set; }
+        public string Name { get; set; }
 
         /// <summary>
         /// Расширенное описание
         /// </summary>
-        public string Description { get; private set; }
+        public string Description { get; set; }
 
 		// TODO: Насследовать пользователей с родительского проекта
 		// public bool InheritUsers { get; private set; }
@@ -39,23 +29,32 @@ namespace BugTracker.Domain
         /// <summary>
         /// Пользователи проекта и роли в которых они участвуют
         /// </summary>
-		public IEnumerable<ProjectUser> Users { get; private set; }
+		public List<ProjectUserRoles> UserRoles { get; set; }
+
+        /// <summary>
+        /// Классификатор: категории задач, которые можно создавать в проекте
+        /// </summary>
+        public List<ProjectIssueCategory> IssueCategories { get; set; }
+
+        /// <summary>
+        /// Классификатор: Версии, которые есть у текущего проекта
+        /// </summary>
+        public List<ProjectVersion> Versions { get; set; }
+
+        /// <summary>
+        /// Классификатор: Типы задач, которые можно создавать/использовать в текущем проекте
+        /// </summary>
+        public List<ProjectIssueType> IssueTypes { get; set; }
 
         // Задачи. Если микросервис, то задачи будем получать в репо Задачи
         // public IEnumerable<Guid> Issues { get; private set; }
 
-        // TODO: Категории задач, которые можно создавать в проекте
-        //public IEnumerable<IssueCategory> IssueCategories { get; private set; }
-
         /// <summary>
         /// Родительский проект
         /// </summary>
-        public Project Parent { get; private set; }
-		public Project ParentId { get; private set; }
-	
-        /// <summary>
-        /// Техническое поле версии объекта
-        /// </summary>
-        public int Version { get; private set; }
-    }
+        /// <remarks>
+        /// Проекты могут входить друг в друга и наследовать пользователей и права
+        /// </remarks>
+		public Guid? ParentProjectId { get; set; }
+	}
 }
