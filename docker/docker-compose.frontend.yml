@@ -1,0 +1,16 @@
+version: '3.9'
+
+services:
+  frontend:
+    build:
+      context: ../frontend # Указываем путь к Dockerfile
+    container_name: nextjs-dev
+    working_dir: /app
+    ports:
+      - "3000:3000" # Пробрасываем порт для разработки
+    volumes:
+      - ../frontend:/app # Монтируем локальную директорию
+      - /app/node_modules # Исключаем локальные node_modules
+    environment:
+      CHOKIDAR_USEPOLLING: "true" # Включаем polling для hot reload
+    command: "npm run dev" # Запускаем dev-сервер

@@ -1,0 +1,45 @@
+version: '3.9'
+networks:
+  gateway_network:
+    external: false
+
+services:
+  gatewayservice:
+    build: ../src/Gateway
+    container_name: gatewayservice
+    ports:
+      - "5010:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - DOTNET_RUNNING_IN_CONTAINER=true
+    depends_on:
+      - userservice
+      - projectservice
+    networks:
+      - gateway_network
+
+  userservice:
+    build:
+      context: ../
+      dockerfile: ./src/Services/UserService/Dockerfile
+    container_name: userservice
+    ports:
+      - "5002:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__Default=Host=userdb;Database=user_db;Username=postgres;Password=postgres;
+    networks:
+      - gateway_network
+
+  projectservice:
+    build:
+      context: ../
+      dockerfile: ./src/Services/ProjectService/Dockerfile
+    container_name: projectservice
+    ports:
+      - "5003:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__Default=Host=projectdb;Database=project_db;Username=postgres;Password=postgres;
+    networks:
+      - gateway_network
