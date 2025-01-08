@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# Чтение сообщения коммита из файла
+COMMIT_MSG_FILE=$1
+COMMIT_MSG=$(cat "$COMMIT_MSG_FILE")
+
+# Регулярное выражение для проверки формата сообщения
+REGEX="^(feat|fix|docs|style|refactor|perf|test|chore):([[:space:]]+[a-zA-Z0-9_-]+)?[[:space:]]+.+"
+
+# Проверка соответствия сообщения формату
+if [[ ! $COMMIT_MSG =~ $REGEX ]]; then
+  echo "Ошибка: Сообщение коммита не соответствует формату."
+  echo "Пример: 'feat: добавлена возможность восстановления пароля пользователя'"
+  echo "Или: 'fix: номер_задачи исправлен баг с загрузкой страницы'"
+  exit 1
+fi
+
+# Ограничение длины сообщения (128 символов)
+MAX_LENGTH=128
+HEADER=$(echo "$COMMIT_MSG" | head -n 1)
+if [ ${#HEADER} -gt $MAX_LENGTH ]; then
+  echo "Ошибка: Длина заголовка сообщения коммита превышает $MAX_LENGTH символов."
+  exit 1
+fi
+
+exit 0
