@@ -4,7 +4,7 @@ using UserService.Domain.Models;
 
 namespace UserService.Api.Controllers
 {
-    [Route("api/auth")]
+    [Route("api/user/auth")]
     [ApiController]
     public class AuthController : ControllerBase
     {
@@ -27,7 +27,7 @@ namespace UserService.Api.Controllers
             {
                 return BadRequest("Неверный формат email.");
             }
-    
+
             var existingUser = await _authService.GetUserByEmailAsync(request.Email);
             if (existingUser != null)
             {
@@ -72,7 +72,7 @@ namespace UserService.Api.Controllers
             {
                 return BadRequest("Неверный формат email.");
             }
-    
+
             var user = await _authService.GetUserByEmailAsync(request.Email);
             if (user == null)
             {
@@ -85,7 +85,7 @@ namespace UserService.Api.Controllers
             }
 
             var token = _authService.GenerateJwtToken(user);
-            
+
             // Установка куки
             Response.Cookies.Append("AUTH_COOKIE", token, new CookieOptions
             {
@@ -94,10 +94,10 @@ namespace UserService.Api.Controllers
                 SameSite = SameSiteMode.Strict,
                 Expires = DateTime.UtcNow.AddDays(7)
             });
-            
+
             return Ok(new AuthResponse { Token = token, Name = user.Name });
         }
-        
+
         /// <summary>
         /// Выход из системы.
         /// </summary>

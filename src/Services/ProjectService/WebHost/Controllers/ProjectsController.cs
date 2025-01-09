@@ -14,7 +14,7 @@ namespace Bugtracker.WebHost.Controllers
     /// Контроллер сущности Проекты
     /// </summary>
     [ApiController]
-    [Route("api/v1/[controller]")]
+    [Route("api/project")]
     public class ProjectsController
         : ControllerBase
     {
@@ -24,22 +24,22 @@ namespace Bugtracker.WebHost.Controllers
 
         public ProjectsController(
             IRepository<Project> projects,
-            IUnitOfWork unitOfWork, 
+            IUnitOfWork unitOfWork,
             IMapper mapper)
         {
             _projects = projects;
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
-        
+
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ProjectResponse>>> GetProjectsAsync()
         {
             IEnumerable<Project> projects =  await _projects.GetAllAsync();
-            IEnumerable<ProjectResponse> projectsResponse = projects.Select(p => MapProject(p));            
+            IEnumerable<ProjectResponse> projectsResponse = projects.Select(p => MapProject(p));
             return Ok(projectsResponse);
         }
-        
+
         [HttpGet("{id:guid}")]
         public async Task<ActionResult<ProjectResponse>> GetProjectAsync(Guid id)
         {
@@ -50,9 +50,9 @@ namespace Bugtracker.WebHost.Controllers
             ProjectResponse response = MapProject(project);
             return Ok(response);
         }
-        
+
         [HttpPost]
-        public async Task<ActionResult<ProjectResponse>> CreateProjectAsync(ProjectRequest request)        
+        public async Task<ActionResult<ProjectResponse>> CreateProjectAsync(ProjectRequest request)
         {
             Project project = _projects.Add(new());
             MapProject(request, project);
@@ -68,19 +68,19 @@ namespace Bugtracker.WebHost.Controllers
             var project = await _projects.GetAsync(id);
             if (project== null)
                 return NotFound();
-            
+
             MapProject(request, project);
 
             await _unitOfWork.SaveChangesAsync();
 
             return NoContent();
         }
-        
+
         [HttpDelete("{id:guid}")]
         public async Task<IActionResult> DeleteProjectAsync(Guid id)
         {
             var project = await _projects.GetAsync(id);
-            
+
             if (project == null)
                 return NotFound();
 
@@ -110,7 +110,7 @@ namespace Bugtracker.WebHost.Controllers
             }
             return response;
         }
-        
+
         private void MapProject(ProjectRequest request, Project project)
         {
             _mapper.Map(request, project);
@@ -122,13 +122,13 @@ namespace Bugtracker.WebHost.Controllers
                 (dto, model) => model.Name = dto); // update
 
             project.IssueTypes = MapCollection(
-                request.IssueTypes, 
+                request.IssueTypes,
                 project.IssueTypes,
                 (dto, model) => dto == model.IssueType,
                 (dto, model) => model.IssueType = dto);
 
             project.IssueCategories = MapCollection(
-                request.IssueCategories, 
+                request.IssueCategories,
                 project.IssueCategories,
                 (dto, model) => dto.CategoryName == model.Name,
                 (dto, model) => _mapper.Map(dto, model));
