@@ -1,0 +1,70 @@
+version: '3.9'
+networks:
+  gateway_network:
+    driver: bridge
+
+services:
+
+  # Postgres для UserService
+  userdb:
+    image: postgres:14
+    container_name: userdb
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+      POSTGRES_DB: "user_db"
+    ports:
+      - "5434:5432"
+    networks:
+      - gateway_network
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Postgres для ProjectService
+  projectdb:
+    image: postgres:14
+    container_name: projectdb
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+      POSTGRES_DB: "project_db"
+    ports:
+      - "5435:5432"
+    networks:
+      - gateway_network
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # RabbitMQ
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    networks:
+      - gateway_network
+
+  # pgAdmin для управления базами
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - userdb
+      - projectdb
+    networks:
+      - gateway_network
