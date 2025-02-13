@@ -103,5 +103,8 @@
 
 **10.02.2025**
 * Проверили установку make и развертывание проекта в windows с помощью docker-compose.
-* Развертывание баз, сервисов и фронта: docker-compose.infra.yml docker-compose.services.yml docker-compose.frontend.yml  
+* Развертывание баз, сервисов и фронта: docker-compose.infra.yml docker-compose.services.yml docker-compose.frontend.yml
 
+**12.02.2025**
+* Обсудили необходимость Kubernates в проекте
+* Необходимо добавить RabbitMq и Kafka
