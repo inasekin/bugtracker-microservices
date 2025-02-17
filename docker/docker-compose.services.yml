@@ -15,6 +15,7 @@ services:
     depends_on:
       - userservice
       - projectservice
+      - commentsservice
     networks:
       - gateway_network
 
@@ -41,5 +42,17 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings__Default=Host=projectdb;Database=project_db;Username=postgres;Password=postgres;
+    networks:
+      - gateway_network
+
+  commentsservice:
+    build:
+      context: ../
+      dockerfile: ./src/Services/CommentsService/Dockerfile
+    container_name: commentsservice
+    ports:
+      - "5004:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
     networks:
       - gateway_network

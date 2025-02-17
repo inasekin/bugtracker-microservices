@@ -23,6 +23,13 @@ var microservices = new[]
         Host = "projectservice",
         Port = 80,
         SwaggerUrl = "http://projectservice/api/project/swagger/v1/swagger.json"
+    },
+    new {
+        Name = "CommentsService",
+        Prefix = "comments",
+        Host = "commentsservice",
+        Port = 80,
+        SwaggerUrl = "http://commentsservice/api/comments/swagger/v1/swagger.json"
     }
 };
 

@@ -2,7 +2,7 @@
 # ПЕРЕМЕННЫЕ
 ################################################################################
 
-SERVICES = ProjectService UserService
+SERVICES = ProjectService UserService CommentsService
 
 # Папка, где лежат эти сервисы
 SERVICES_PATH = ./src/Services
