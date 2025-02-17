@@ -136,7 +136,7 @@ dotnet ef database update \
 
 При запуске отдельного сервиса swagger будет доступен по адресу - http://localhost:{порт из Properties/launchSettings.json}/api/v1/{префикс сервиса}/swagger/index.html
 
-Пример - http://localhost:6002/api/v1/user/swagger/index.html
+Пример - http://localhost:6002/api/user/swagger/index.html
 
 Если запуск первый раз, то нужно будет выполнить миграции
 

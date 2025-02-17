@@ -41,7 +41,7 @@ services:
       timeout: 5s
       retries: 5
 
-  # MongoDB для CommentsService  
+  # MongoDB для CommentsService
   commentsdb:
     image: mongo
     container_name: commentsdb

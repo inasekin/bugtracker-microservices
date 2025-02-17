@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace CommentsService.Api.Controllers
 {
     [ApiController]
-    [Route("api/v1/[controller]")]
+    [Route("api/comments")]
     public class CommentsController : ControllerBase
     {
         private readonly IRepository<Comment> _commentsRepository;
@@ -21,7 +21,7 @@ namespace CommentsService.Api.Controllers
         /// <summary>
         /// Получить комментарий по id
         /// </summary>
-        [HttpGet("{id:guid}")]
+        [HttpGet("{id:guid}", Name = "GetCommentById")]
         public async Task<ActionResult<CommentResponse>> GetCommentByIdAsync(Guid id)
         {
             var comment = await _commentsRepository.GetByIdAsync(id);
@@ -37,14 +37,14 @@ namespace CommentsService.Api.Controllers
         /// <summary>
         /// Получить все комментарии для указанного Issue
         /// </summary>
-        [HttpGet("IssueComments/{issueId:guid}")]
+        [HttpGet("issue-comments/{id:guid}")]
         public async Task<ActionResult<List<CommentResponse>>> GetAllCommentsByIssueId(Guid issueId)
         {
             var comments = await _commentsRepository.GetAllAsync();
             var taskComments = comments
                 .Where(c => c.IssueId == issueId)
                 .ToList();
-            if (taskComments.Count == 0) 
+            if (taskComments.Count == 0)
             {
                 return Ok(new List<CommentResponse>());
             }
@@ -61,19 +61,19 @@ namespace CommentsService.Api.Controllers
         [HttpPost]
         public async Task<ActionResult<CommentResponse>> CreateComment(CreateCommentRequest request)
         {
-            var comment = new Comment()
-            {
-                Id = Guid.NewGuid(),
-                IssueId = request.IssueId,
-                AuthorId = request.AuthorId,
-                Content = request.Content,
-                CreatedAtTime = DateTime.UtcNow,
-                UpdatedAtTime = DateTime.UtcNow,
-            };
+          var comment = new Comment()
+          {
+            Id = Guid.NewGuid(),
+            IssueId = request.IssueId,
+            AuthorId = request.AuthorId,
+            Content = request.Content,
+            CreatedAtTime = DateTime.UtcNow,
+            UpdatedAtTime = DateTime.UtcNow,
+          };
 
-            await _commentsRepository.AddAsync(comment);
+          await _commentsRepository.AddAsync(comment);
 
-            return CreatedAtAction(nameof(GetCommentByIdAsync), new {id = comment.Id}, null);
+          return CreatedAtRoute("GetCommentById", new { id = comment.Id }, null);
         }
 
         /// <summary>

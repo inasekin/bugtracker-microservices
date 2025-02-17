@@ -47,7 +47,7 @@ foreach (var svc in microservices)
             new { Host = svc.Host, Port = svc.Port }
         }
     });
-    
+
     routes.Add(new {
         Priority = 90,
         UpstreamPathTemplate = $"/api/{svc.Prefix}/swagger/v1/swagger.json",
@@ -59,7 +59,6 @@ foreach (var svc in microservices)
         }
     });
 
-    // 3) Swagger static
     routes.Add(new {
         Priority = 100,
         UpstreamPathTemplate = $"/api/{svc.Prefix}/swagger/{{everything}}",

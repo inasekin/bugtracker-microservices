@@ -22,8 +22,16 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+  app.UseDeveloperExceptionPage(); // Показывает детальную информацию об ошибках
+  app.UseSwagger(c =>
+  {
+    c.RouteTemplate = "api/comments/swagger/{documentName}/swagger.json";
+  });
+  app.UseSwaggerUI(c =>
+  {
+    c.SwaggerEndpoint("/api/comments/swagger/v1/swagger.json", "Comments Service API");
+    c.RoutePrefix = "api/comments/swagger";
+  });
 }
 
 app.UseAuthorization();

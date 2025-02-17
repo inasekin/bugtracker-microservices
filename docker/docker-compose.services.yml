@@ -1,7 +1,7 @@
 version: '3.9'
 networks:
   gateway_network:
-    external: false
+    driver: bridge
 
 services:
   gatewayservice:
@@ -54,5 +54,7 @@ services:
       - "5004:80"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+      - MongoDBSettings__Connection=mongodb://admin:password@commentsdb:27017/
+      - MongoDBSettings__DatabaseName=CommentsServiceDB
     networks:
       - gateway_network
