@@ -38,11 +38,11 @@ namespace CommentsService.Api.Controllers
         /// Получить все комментарии для указанного Issue
         /// </summary>
         [HttpGet("issue-comments/{id:guid}")]
-        public async Task<ActionResult<List<CommentResponse>>> GetAllCommentsByIssueId(Guid issueId)
+        public async Task<ActionResult<List<CommentResponse>>> GetAllCommentsByIssueId(Guid id)
         {
             var comments = await _commentsRepository.GetAllAsync();
             var taskComments = comments
-                .Where(c => c.IssueId == issueId)
+                .Where(c => c.IssueId == id)
                 .ToList();
             if (taskComments.Count == 0)
             {
