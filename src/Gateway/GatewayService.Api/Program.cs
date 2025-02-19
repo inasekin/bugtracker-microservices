@@ -23,6 +23,13 @@ var microservices = new[]
         Host = "projectservice",
         Port = 80,
         SwaggerUrl = "http://projectservice/api/project/swagger/v1/swagger.json"
+    },
+    new {
+        Name = "CommentsService",
+        Prefix = "comments",
+        Host = "commentsservice",
+        Port = 80,
+        SwaggerUrl = "http://commentsservice/api/comments/swagger/v1/swagger.json"
     }
 };
 
@@ -40,7 +47,7 @@ foreach (var svc in microservices)
             new { Host = svc.Host, Port = svc.Port }
         }
     });
-    
+
     routes.Add(new {
         Priority = 90,
         UpstreamPathTemplate = $"/api/{svc.Prefix}/swagger/v1/swagger.json",
@@ -52,7 +59,6 @@ foreach (var svc in microservices)
         }
     });
 
-    // 3) Swagger static
     routes.Add(new {
         Priority = 100,
         UpstreamPathTemplate = $"/api/{svc.Prefix}/swagger/{{everything}}",

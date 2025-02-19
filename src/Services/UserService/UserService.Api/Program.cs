@@ -33,9 +33,6 @@ builder.Services.AddScoped<UserRepository>();
 
 builder.Services.AddSingleton<IEventBus, RabbitMqEventBus>();
 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
 // Регистрация зависимостей (DI)
 builder.Services.AddScoped<UserManagementService>();
 builder.Services.AddScoped<AuthService>();
@@ -126,11 +123,6 @@ if (app.Environment.IsDevelopment())
         c.SwaggerEndpoint("/api/user/swagger/v1/swagger.json", "User Service API");
         c.RoutePrefix = "api/user/swagger";
     });
-}
-else
-{
-    app.UseExceptionHandler("/Error");
-    app.UseHsts();
 }
 
 // Политика CORS
