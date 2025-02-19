@@ -1,10 +1,8 @@
-version: '3.9'
-
 services:
   frontend:
     build:
       context: ../frontend # Указываем путь к Dockerfile
-    container_name: nextjs-dev
+    container_name: frontend
     working_dir: /app
     ports:
       - "3000:3000" # Пробрасываем порт для разработки

@@ -34,7 +34,7 @@ git submodule add <URL> <путь>
 ```
 #### Инициализируйте и скачайте подмодуль:
 ```bash
-git submodule update --init --recursive
+git submodule update --recursive --remote
 ```
 #### Обновление изменений в подмодуле
 Зайдите в директорию подмодуля:
