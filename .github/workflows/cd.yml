@@ -1,4 +1,5 @@
-﻿name: Build and Publish Docker Images
+﻿# Build and Publish Docker Images
+name: CD
 
 on:
   push:
