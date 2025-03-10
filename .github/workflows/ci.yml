@@ -8,12 +8,17 @@ jobs:
   build_and_test:
     runs-on: ubuntu-latest
     steps:
-      # Шаг 1: Клонируем репозиторий вместе с submodule
-      - name: Checkout repository
-        uses: actions/checkout@v2
+      # Шаг 1: Клонируем репозиторий вместе с submodule, исключая kubernetes
+      - name: Checkout repository (with submodules)
+        uses: actions/checkout@v3
         with:
-          submodules: recursive # Инициализируем и обновляем submodules
-          exclude: kubernetes
+          submodules: recursive
+
+      - name: Disable kubernetes submodule
+        run: |
+          git config -f .gitmodules --remove-section submodule.kubernetes || true
+          git submodule sync
+          git submodule update --init --recursive --exclude kubernetes
 
       # Шаг 2: Настраиваем .NET
       - name: Setup .NET

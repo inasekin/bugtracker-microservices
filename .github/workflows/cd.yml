@@ -18,8 +18,13 @@ jobs:
       - name: Checkout repository (with submodules)
         uses: actions/checkout@v3
         with:
-          submodules: recursive # Инициализируем и обновляем submodules
-          exclude: kubernetes
+          submodules: recursive
+
+      - name: Disable kubernetes submodule
+        run: |
+          git config -f .gitmodules --remove-section submodule.kubernetes || true
+          git submodule sync
+          git submodule update --init --recursive --exclude kubernetes
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
