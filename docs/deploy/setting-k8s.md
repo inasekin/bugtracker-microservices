@@ -8,6 +8,8 @@
 - [Шаг 3: Установка графического интерфейса для Kubernetes](#шаг-3-установка-графического-интерфейса-для-kubernetes)
 - [Шаг 4: Подготовка конфигурационных файлов](#шаг-4-подготовка-конфигурационных-файлов)
 - [Шаг 5: Настройка доступа к GitHub Packages](#шаг-5-настройка-доступа-к-github-packages)
+- [Шаг 6: Настройка домена](#шаг-6-настройка-домена)
+- [Шаг 7: Применение конфигураций Kubernetes](#шаг-7-применение-конфигураций-kubernetes)
 
 ## Обзор
 
@@ -95,7 +97,7 @@ kubectl get nodes
 
 ```bash
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.1.1/deploy/static/provider/baremetal/deploy.yaml
-kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.12.0/cert-manager.yaml
+
 # Проверка установки, долден выдать список зарегистрированных подов
 kubectl get pods -n ingress-nginx
 ```
@@ -166,11 +168,91 @@ mkdir -p kubernetes/manifests/{00-namespace,01-configs,02-mongodb,03-services,04
 ```
 
 Далее создаем все необходимые конфиги в нужных директориях
+
 ## Шаг 5: Настройка доступа к GitHub Packages
 
 ```bash
 # Создаем namespace
 kubectl create namespace bugtracker
 
+# Создаем секрет для доступа к GitHub Packages
+kubectl create secret docker-registry github-registry \
+  --namespace bugtracker \
+  --docker-server=ghcr.io \
+  --docker-username=<GITHUB_USERNAME> \
+  --docker-password=<GITHUB_TOKEN>
+```
+## Шаг 6: Настройка домена
 
+Для автоматической выдачи и обновления SSL-сертификатов используем cert-manager:
+
+```bash
+# Установка cert-manager
+kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.12.0/cert-manager.yaml
+
+kubectl -n cert-manager wait --for=condition=ready pod -l app.kubernetes.io/instance=cert-manager --timeout=120s
+```
+
+Чтобы связать домен с виртуальной машиной в Яндекс.Облаке:
+
+Узнайте внешний IP вашей виртуальной машины:
+```bash
+IP_ADDRESS=$(curl -s ifconfig.me)
+echo $IP_ADDRESS
+
+Войдите в панель управления провайдера и найдите раздел управления DNS для вашего домена
+Добавьте запись типа A:
+
+Имя: bugtracker (или другой желаемый поддомен)
+Тип: A
+Значение: IP-адрес вашей виртуальной машины
+```
+
+## Шаг 7: Применение конфигураций Kubernetes
+
+На сервер облака необходимо скачать репозиторий с конфигурацией
+
+Для автоматического нужно использовать скрипт deploy.sh
+
+```bash
+# Установка прав на выполнение скрипта
+chmod +x deploy.sh
+
+# Запуск скрипта с необходимыми параметрами
+./deploy.sh <GITHUB_USERNAME> <GITHUB_TOKEN> <DOMAIN> <EMAIL>
+```
+
+Где:
+
+<GITHUB_USERNAME> - ваше имя пользователя на GitHub
+<GITHUB_TOKEN> - токен с правами доступа к пакетам (read:packages)
+<DOMAIN> - ваш основной домен (например, yourdomain.ru)
+<EMAIL> - ваша электронная почта для сертификатов Let's Encrypt
+
+Или вы можете применить конфигурации вручную:
+
+Обращайте внимание на путь к конфигам!
+
+```bash
+
+# 1. Namespace
+kubectl apply -f kubernetes/manifests/00-namespace/namespace.yaml
+
+# 2. Конфигурации и секреты
+kubectl apply -f kubernetes/manifests/01-configs/
+
+# 3. Базы данных (MongoDB, PostgreSQL, Redis, RabbitMQ)
+kubectl apply -f kubernetes/manifests/02-databases/
+
+# 4. Микросервисы
+kubectl apply -f kubernetes/manifests/03-services/
+
+# 5. API Gateway
+kubectl apply -f kubernetes/manifests/04-gateway/
+
+# 6. Frontend
+kubectl apply -f kubernetes/manifests/05-frontend/
+
+# 7. Cert-manager и Ingress
+kubectl apply -f kubernetes/manifests/06-ingress/
 ```
