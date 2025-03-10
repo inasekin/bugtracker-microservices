@@ -3,6 +3,7 @@
 Исходный код - https://github.com/inasekin/microservices-monorepo
 
 ![CI](https://github.com/pofoq/otus/workflows/CI/badge.svg)
+[![Maintainability](https://api.codeclimate.com/v1/badges/385c33b7e214963a95ca/maintainability)](https://codeclimate.com/github/inasekin/bugtracker-microservices/maintainability)
 
 ## О проекте
 Этот репозиторий представляет собой монорепозиторий для микросервисного проекта на .NET. Включает несколько микросервисов, инфраструктурные компоненты, базу данных и фронтенд-часть.
