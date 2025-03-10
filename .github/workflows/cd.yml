@@ -1,5 +1,4 @@
-﻿# Build and Publish Docker Images
-name: CD
+﻿name: CD
 
 on:
   push:
@@ -18,7 +17,7 @@ jobs:
       - name: Checkout repository (with submodules)
         uses: actions/checkout@v3
         with:
-          submodules: recursive
+          submodules: true
 
       - name: Disable kubernetes submodule
         run: |
