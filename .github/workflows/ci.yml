@@ -8,48 +8,46 @@ jobs:
   build_and_test:
     runs-on: ubuntu-latest
     steps:
-      # Шаг 1: Клонируем репозиторий вместе с submodule, исключая kubernetes
-      - name: Checkout repository (with submodules)
+      # Клонируем репозиторий без submodule
+      - name: Checkout repository (without submodules)
         uses: actions/checkout@v3
         with:
-          submodules: true
+          submodules: false
 
-      - name: Disable kubernetes submodule
-        run: |
-          git config -f .gitmodules --remove-section submodule.kubernetes || true
-          git submodule sync
-          git submodule update --init --recursive --exclude kubernetes
+      # Инициализируем только submodule frontend
+      - name: Initialize frontend submodule
+        run: git submodule update --init --depth 1 frontend
 
-      # Шаг 2: Настраиваем .NET
+      # Шаг 3: Настраиваем .NET
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: '8.0.x'
 
-      # Шаг 3: Настраиваем Node.js
+      # Шаг 4: Настраиваем Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '20.x'
 
-      # Шаг 4: Восстанавливаем зависимости для backend
+      # Шаг 5: Восстанавливаем зависимости для backend
       - name: Restore backend dependencies
         run: dotnet restore MicroservicesMonorepo.sln
 
-      # Шаг 5: Сборка backend
+      # Шаг 6: Сборка backend
       - name: Build backend
         run: dotnet build MicroservicesMonorepo.sln --no-restore -c Release
 
-      # Шаг 6: Тестирование backend
+      # Шаг 7: Тестирование backend
       - name: Test backend
         run: dotnet test MicroservicesMonorepo.sln --no-build -c Release
 
-      # Шаг 7: Устанавливаем зависимости для frontend
+      # Шаг 8: Устанавливаем зависимости для frontend
       - name: Install frontend dependencies
         working-directory: ./frontend
         run: npm install --legacy-peer-deps
 
-      # Шаг 8: Сборка frontend
+      # Шаг 9: Сборка frontend
       - name: Build frontend
         working-directory: ./frontend
         run: npm run build
