@@ -86,15 +86,26 @@ git commit -m "feat: update submodule <имя>”
 
 ## Шаги запуска
 
-### Запуск инфраструктуры (БД, RabbitMQ и др.)
+### Запуск баз данных
 
-1. Соберите инфраструктуру:
+1. Соберите базы данных:
    ```bash
-   make infra-up
+   make db-up
    ```
 2. Остановите инфраструктуру:
    ```bash
-   make infra-down
+   make db-down
+   ```
+
+### Запуск остальных вспомогательных сервисов (RabbitMQ и др.)
+
+1. Поднять:
+   ```bash
+   make brokers-up
+   ```
+2. Остановить:
+   ```bash
+   make brokers-down
    ```
 
 ### Запуск микросервисов
@@ -117,6 +128,9 @@ git commit -m "feat: update submodule <имя>”
    make frontend-up
    ```
 2. Не забудьте создать .env файл в директории frontend
+```
+VITE_API_URL=http://localhost:5010
+```
 3. Остановите фронтенд:
    ```bash
    make frontend-down

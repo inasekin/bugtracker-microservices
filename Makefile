@@ -124,21 +124,31 @@ migrate-all:
 # Docker Compose (разделённые)
 ################################################################################
 
-## infra-up
+## db-up
 ## Запускает инфраструктурные сервисы (БД, RabbitMQ, pgAdmin)
-infra-up:
-	$(DOCKER_COMPOSE) -f $(DOCKER_FOLDER)/docker-compose.infra.yml up -d --build
+db-up:
+	$(DOCKER_COMPOSE) -f $(DOCKER_FOLDER)/docker-compose.db.yml up -d --build
 
-## infra-down
+## db-down
 ## Останавливает инфраструктурные сервисы
-infra-down:
-	$(DOCKER_COMPOSE) -f $(DOCKER_FOLDER)/docker-compose.infra.yml down
+db-down:
+	$(DOCKER_COMPOSE) -f $(DOCKER_FOLDER)/docker-compose.db.yml down
 
-## infra-restart
+## brokers-up
+## Запускает инфраструктурные сервисы (БД, RabbitMQ, pgAdmin)
+brokers-up:
+	$(DOCKER_COMPOSE) -f $(DOCKER_FOLDER)/docker-compose.brokers.yml up -d --build
+
+## brokers-down
+## Останавливает инфраструктурные сервисы
+brokers-down:
+	$(DOCKER_COMPOSE) -f $(DOCKER_FOLDER)/docker-compose.brokers.yml down
+
+## db-restart
 ## Перезапускает инфраструктурные сервисы
-infra-restart:
-	$(MAKE) infra-down
-	$(MAKE) infra-up
+db-restart:
+	$(MAKE) db-down
+	$(MAKE) db-up
 
 ## services-up
 ## Запускает микросервисы
@@ -193,7 +203,8 @@ frontend-down:
 ## all-up
 ## Запускает инфраструктуру, микросервисы и фронтенд
 all-up:
-	$(MAKE) infra-up
+	$(MAKE) db-up
+  $(MAKE) brokers-up
 	$(MAKE) services-up
 	$(MAKE) frontend-up
 
@@ -202,4 +213,5 @@ all-up:
 all-down:
 	$(MAKE) frontend-down
 	$(MAKE) services-down
-	$(MAKE) infra-down
+	$(MAKE) brokers-down
+	$(MAKE) db-down
