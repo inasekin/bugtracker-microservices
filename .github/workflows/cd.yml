@@ -3,8 +3,6 @@
 on:
   push:
     branches: [ master ]
-  pull_request:
-    branches: [ master ]
 
 jobs:
   build-and-push:
@@ -107,9 +105,6 @@ jobs:
             git fetch origin main &&
             git reset --hard origin/main &&
 
-            # Create namespace if not exists
-            kubectl apply -f manifests/00-namespace/namespace.yaml || true
-
             # Apply all manifests
             kubectl apply -f manifests/ --recursive -n bugtracker
           '
@@ -128,20 +123,35 @@ jobs:
               --docker-username=${{ secrets.USERNAME }} \
               --docker-password=${{ secrets.TOKEN }}
 
-            # Force pull new images by restarting deployments
-            kubectl rollout restart deployment gateway-deployment -n bugtracker || true
-            kubectl rollout restart deployment user-service-deployment -n bugtracker || true
-            kubectl rollout restart deployment project-service-deployment -n bugtracker || true
-            kubectl rollout restart deployment comments-service-deployment -n bugtracker || true
-            kubectl rollout restart deployment frontend-deployment -n bugtracker || true
+            # Get the list of actual deployments
+            echo "Getting the list of deployments..."
+            DEPLOYMENTS=$(kubectl get deployments -n bugtracker -o name)
 
-            # Wait for deployments to be ready (with error handling)
-            echo "Checking deployment status..."
-            kubectl rollout status deployment gateway-deployment -n bugtracker --timeout=180s || echo "Gateway deployment not ready or does not exist"
-            kubectl rollout status deployment user-service-deployment -n bugtracker --timeout=180s || echo "User service deployment not ready or does not exist"
-            kubectl rollout status deployment project-service-deployment -n bugtracker --timeout=180s || echo "Project service deployment not ready or does not exist"
-            kubectl rollout status deployment comments-service-deployment -n bugtracker --timeout=180s || echo "Comments service deployment not ready or does not exist"
-            kubectl rollout status deployment frontend-deployment -n bugtracker --timeout=180s || echo "Frontend deployment not ready or does not exist"
+            # Force pull new images by restarting all deployments
+            echo "Restarting all deployments..."
+            for DEPLOYMENT in $DEPLOYMENTS; do
+              echo "Restarting $DEPLOYMENT"
+              kubectl rollout restart $DEPLOYMENT -n bugtracker
+            done
+
+            # Wait for deployments to be ready
+            echo "Waiting for deployments to be ready..."
+
+            # Main services - wait for specifics we know exist
+            echo "Checking gateway-service deployment..."
+            kubectl rollout status deployment/gateway-service -n bugtracker --timeout=180s || echo "Gateway service not ready"
+
+            echo "Checking user-service deployment..."
+            kubectl rollout status deployment/user-service -n bugtracker --timeout=180s || echo "User service not ready"
+
+            echo "Checking project-service deployment..."
+            kubectl rollout status deployment/project-service -n bugtracker --timeout=180s || echo "Project service not ready"
+
+            echo "Checking comments-service deployment..."
+            kubectl rollout status deployment/comments-service -n bugtracker --timeout=180s || echo "Comments service not ready"
+
+            echo "Checking frontend deployment..."
+            kubectl rollout status deployment/frontend -n bugtracker --timeout=180s || echo "Frontend not ready"
           '
 
       - name: Verify Deployment
