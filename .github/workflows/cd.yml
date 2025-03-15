@@ -29,7 +29,7 @@ jobs:
         uses: docker/login-action@v2
         with:
           registry: ghcr.io
-          username: ${{ secrets.GITHUB_USERNAME }}
+          username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
       # Gateway
@@ -39,7 +39,7 @@ jobs:
           context: ./src/Gateway
           file: ./src/Gateway/Dockerfile
           push: true
-          tags: ghcr.io/${{ secrets.GITHUB_REPOSITORY }}/gatewayservice:latest
+          tags: ghcr.io/${{ github.repository }}/gatewayservice:latest
 
       # User Service
       - name: Build and push UserService
@@ -48,7 +48,7 @@ jobs:
           context: .
           file: ./src/Services/UserService/Dockerfile
           push: true
-          tags: ghcr.io/${{ secrets.GITHUB_REPOSITORY }}/userservice:latest
+          tags: ghcr.io/${{ github.repository }}/userservice:latest
 
       # Project Service
       - name: Build and push ProjectService
@@ -57,7 +57,7 @@ jobs:
           context: .
           file: ./src/Services/ProjectService/Dockerfile
           push: true
-          tags: ghcr.io/${{ secrets.GITHUB_REPOSITORY }}/projectservice:latest
+          tags: ghcr.io/${{ github.repository }}/projectservice:latest
 
       # Comments Service
       - name: Build and push CommentsService
@@ -66,7 +66,7 @@ jobs:
           context: .
           file: ./src/Services/CommentsService/Dockerfile
           push: true
-          tags: ghcr.io/${{ secrets.GITHUB_REPOSITORY }}/commentsservice:latest
+          tags: ghcr.io/${{ github.repository }}/commentsservice:latest
 
       # Frontend
       - name: Build and push Frontend
@@ -75,7 +75,7 @@ jobs:
           context: ./frontend
           file: ./frontend/Dockerfile
           push: true
-          tags: ghcr.io/${{ secrets.GITHUB_REPOSITORY }}/frontend:latest
+          tags: ghcr.io/${{ github.repository }}/frontend:latest
 
   deploy-to-kubernetes:
     needs: build-and-push
