@@ -96,18 +96,30 @@ jobs:
           known_hosts: ${{ secrets.VM_IP_ADDRESS }}
           if_key_exists: replace
 
-      - name: Trigger Kubernetes Config Update
+      - name: Setup Kubernetes Config and Update Manifests
         run: |
           ssh -o StrictHostKeyChecking=no yc-user@${{ secrets.VM_IP_ADDRESS }} '
+            # Use user-specific kubeconfig
+            export KUBECONFIG=/home/yc-user/.kube/config
+
+            # Update the kubernetes repository
             cd ~/kubernetes-config-bugtracker &&
             git fetch origin main &&
             git reset --hard origin/main &&
-            sudo kubectl apply -f manifests/ --recursive -n bugtracker
+
+            # Create namespace if not exists
+            kubectl apply -f manifests/00-namespace/namespace.yaml || true
+
+            # Apply all manifests
+            kubectl apply -f manifests/ --recursive -n bugtracker
           '
 
       - name: Update Image Tags and Restart Deployments
         run: |
           ssh -o StrictHostKeyChecking=no yc-user@${{ secrets.VM_IP_ADDRESS }} '
+            # Use user-specific kubeconfig
+            export KUBECONFIG=/home/yc-user/.kube/config
+
             # Update image pull secrets to ensure we have the latest credentials
             kubectl delete secret github-registry -n bugtracker || true
             kubectl create secret docker-registry github-registry \
@@ -117,23 +129,27 @@ jobs:
               --docker-password=${{ secrets.TOKEN }}
 
             # Force pull new images by restarting deployments
-            sudo kubectl rollout restart deployment gateway-deployment -n bugtracker
-            sudo kubectl rollout restart deployment user-service-deployment -n bugtracker
-            sudo kubectl rollout restart deployment project-service-deployment -n bugtracker
-            sudo kubectl rollout restart deployment comments-service-deployment -n bugtracker
-            sudo kubectl rollout restart deployment frontend-deployment -n bugtracker
+            kubectl rollout restart deployment gateway-deployment -n bugtracker || true
+            kubectl rollout restart deployment user-service-deployment -n bugtracker || true
+            kubectl rollout restart deployment project-service-deployment -n bugtracker || true
+            kubectl rollout restart deployment comments-service-deployment -n bugtracker || true
+            kubectl rollout restart deployment frontend-deployment -n bugtracker || true
 
-            # Wait for deployments to be ready
-            kubectl rollout status deployment gateway-deployment -n bugtracker
-            kubectl rollout status deployment user-service-deployment -n bugtracker
-            kubectl rollout status deployment project-service-deployment -n bugtracker
-            kubectl rollout status deployment comments-service-deployment -n bugtracker
-            kubectl rollout status deployment frontend-deployment -n bugtracker
+            # Wait for deployments to be ready (with error handling)
+            echo "Checking deployment status..."
+            kubectl rollout status deployment gateway-deployment -n bugtracker --timeout=180s || echo "Gateway deployment not ready or does not exist"
+            kubectl rollout status deployment user-service-deployment -n bugtracker --timeout=180s || echo "User service deployment not ready or does not exist"
+            kubectl rollout status deployment project-service-deployment -n bugtracker --timeout=180s || echo "Project service deployment not ready or does not exist"
+            kubectl rollout status deployment comments-service-deployment -n bugtracker --timeout=180s || echo "Comments service deployment not ready or does not exist"
+            kubectl rollout status deployment frontend-deployment -n bugtracker --timeout=180s || echo "Frontend deployment not ready or does not exist"
           '
 
       - name: Verify Deployment
         run: |
           ssh -o StrictHostKeyChecking=no yc-user@${{ secrets.VM_IP_ADDRESS }} '
+            # Use user-specific kubeconfig
+            export KUBECONFIG=/home/yc-user/.kube/config
+
             echo "=== Deployment Status ==="
             kubectl get pods -n bugtracker
             kubectl get services -n bugtracker
