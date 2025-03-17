@@ -1,10 +1,7 @@
-﻿# Build and Publish Docker Images
-name: CD
+﻿name: CD
 
 on:
   push:
-    branches: [ master ]
-  pull_request:
     branches: [ master ]
 
 jobs:
@@ -15,10 +12,13 @@ jobs:
       packages: write
 
     steps:
-      - name: Checkout repository (with submodules)
+      - name: Checkout repository (without submodules)
         uses: actions/checkout@v3
         with:
-          submodules: recursive # Инициализируем и обновляем submodules
+          submodules: false
+
+      - name: Initialize frontend submodule
+        run: git submodule update --init --depth 1 frontend
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -74,3 +74,94 @@ jobs:
           file: ./frontend/Dockerfile
           push: true
           tags: ghcr.io/${{ github.repository }}/frontend:latest
+
+  deploy-to-kubernetes:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create .ssh directory
+        run: mkdir -p ~/.ssh && chmod 700 ~/.ssh
+
+      - name: Add known hosts
+        run: |
+          ssh-keyscan -H ${{ secrets.VM_IP_ADDRESS }} >> ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
+
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          known_hosts: ${{ secrets.VM_IP_ADDRESS }}
+          if_key_exists: replace
+
+      - name: Setup Kubernetes Config and Update Manifests
+        run: |
+          ssh -o StrictHostKeyChecking=no yc-user@${{ secrets.VM_IP_ADDRESS }} '
+            # Use user-specific kubeconfig
+            export KUBECONFIG=/home/yc-user/.kube/config
+
+            # Update the kubernetes repository
+            cd ~/kubernetes-config-bugtracker &&
+            git fetch origin main &&
+            git reset --hard origin/main &&
+
+            # Apply all manifests
+            kubectl apply -f manifests/ --recursive -n bugtracker
+          '
+
+      - name: Update Image Tags and Restart Deployments
+        run: |
+          ssh -o StrictHostKeyChecking=no yc-user@${{ secrets.VM_IP_ADDRESS }} '
+            # Use user-specific kubeconfig
+            export KUBECONFIG=/home/yc-user/.kube/config
+
+            # Update image pull secrets to ensure we have the latest credentials
+            kubectl delete secret github-registry -n bugtracker || true
+            kubectl create secret docker-registry github-registry \
+              --namespace bugtracker \
+              --docker-server=ghcr.io \
+              --docker-username=${{ secrets.USERNAME }} \
+              --docker-password=${{ secrets.TOKEN }}
+
+            # Get the list of actual deployments
+            echo "Getting the list of deployments..."
+            DEPLOYMENTS=$(kubectl get deployments -n bugtracker -o name)
+
+            # Force pull new images by restarting all deployments
+            echo "Restarting all deployments..."
+            for DEPLOYMENT in $DEPLOYMENTS; do
+              echo "Restarting $DEPLOYMENT"
+              kubectl rollout restart $DEPLOYMENT -n bugtracker
+            done
+
+            # Wait for deployments to be ready
+            echo "Waiting for deployments to be ready..."
+
+            # Main services - wait for specifics we know exist
+            echo "Checking gateway-service deployment..."
+            kubectl rollout status deployment/gateway-service -n bugtracker --timeout=180s || echo "Gateway service not ready"
+
+            echo "Checking user-service deployment..."
+            kubectl rollout status deployment/user-service -n bugtracker --timeout=180s || echo "User service not ready"
+
+            echo "Checking project-service deployment..."
+            kubectl rollout status deployment/project-service -n bugtracker --timeout=180s || echo "Project service not ready"
+
+            echo "Checking comments-service deployment..."
+            kubectl rollout status deployment/comments-service -n bugtracker --timeout=180s || echo "Comments service not ready"
+
+            echo "Checking frontend deployment..."
+            kubectl rollout status deployment/frontend -n bugtracker --timeout=180s || echo "Frontend not ready"
+          '
+
+      - name: Verify Deployment
+        run: |
+          ssh -o StrictHostKeyChecking=no yc-user@${{ secrets.VM_IP_ADDRESS }} '
+            # Use user-specific kubeconfig
+            export KUBECONFIG=/home/yc-user/.kube/config
+
+            echo "=== Deployment Status ==="
+            kubectl get pods -n bugtracker
+            kubectl get services -n bugtracker
+            kubectl get ingress -n bugtracker
+          '
