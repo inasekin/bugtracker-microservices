@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace Bugtracker.WebHost.Contracts
@@ -6,7 +6,7 @@ namespace Bugtracker.WebHost.Contracts
     public class ProjectRequest
     {
         public string Name { get; set; }
-        public string Description { get; private set; }
+        public string Description { get; set; }
         public Guid? ParentProjectId { get; set; }
 
         public IEnumerable<string> IssueTypes { get; set; }

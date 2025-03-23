@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -59,8 +59,13 @@ namespace Bugtracker.WebHost.Controllers
 
             await _unitOfWork.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetProjectAsync), new {id = project.Id}, null);
-        }
+            // Проблема с возвращением json в post fetch на CreatedActions
+            //return CreatedAtAction(nameof(GetProjectAsync), new {id = project.Id}, null);
+
+            // Будем всегда возвращать на post ок и объекты, чтобы код клиента был одинаковый
+            ProjectResponse response = MapProject(project);
+            return Ok(response);
+         }
 
         [HttpPut("{id:guid}")]
         public async Task<IActionResult> UpdateProjectAsync(Guid id, ProjectRequest request)
