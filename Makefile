@@ -204,7 +204,7 @@ frontend-down:
 ## Запускает инфраструктуру, микросервисы и фронтенд
 all-up:
 	$(MAKE) db-up
-  $(MAKE) brokers-up
+	$(MAKE) brokers-up
 	$(MAKE) services-up
 	$(MAKE) frontend-up
 
