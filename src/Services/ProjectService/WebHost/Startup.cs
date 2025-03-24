@@ -8,8 +8,10 @@ using DataAccess;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System;
 using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
 
 namespace PromoCodeFactory.WebHost
@@ -29,6 +31,19 @@ namespace PromoCodeFactory.WebHost
         {
             services.AddControllers().AddMvcOptions(x => 
                 x.SuppressAsyncSuffixInActionNames = false);
+
+            // Настройка CORS
+            string[] allowedOrigins = Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? new[] { "http://localhost:3000" };
+            services.AddCors(options =>
+            {
+              options.AddPolicy("NextJsPolicy", policy =>
+              {
+                policy.WithOrigins(allowedOrigins)
+                      .AllowAnyHeader()
+                      .AllowAnyMethod()
+                      .AllowCredentials(); // Разрешение передачи куки
+              });
+            });
 
             services.AddScoped(typeof(IUnitOfWork), typeof(ProjectRepositoryUnitOfWork));
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
@@ -52,7 +67,7 @@ namespace PromoCodeFactory.WebHost
             services.AddSingleton<IMapper>(new Mapper(mapperConfiguration));
 
             services.AddOpenApiDocument(options =>
-            {
+             {
                 options.Title = "PromoCode Factory API Doc";
                 options.Version = "1.0";
             });
@@ -74,7 +89,7 @@ namespace PromoCodeFactory.WebHost
             }
 
             app.UseOpenApi();
-            
+
             // Настройка Swagger с кастомными маршрутами
             app.UseSwagger(c =>
             {
@@ -87,7 +102,12 @@ namespace PromoCodeFactory.WebHost
                 c.RoutePrefix = "api/project/swagger";
             });
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
+
+            if(env.IsDevelopment())
+              app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+            else
+              app.UseCors("NextJsPolicy");
 
             app.UseRouting();
 
@@ -95,7 +115,8 @@ namespace PromoCodeFactory.WebHost
             {
                 endpoints.MapControllers();
             });
-            
+
+
             dbInitializer.InitializeDb();
         }
     }
