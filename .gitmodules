@@ -3,4 +3,4 @@
 	url = https://github.com/inasekin/bugtracker-frontend
 [submodule "kubernetes"]
 	path = kubernetes
-	url = git@github.com:inasekin/kubernetes-config-bugtracker.git
+	url = https://github.com/inasekin/kubernetes-config-bugtracker
