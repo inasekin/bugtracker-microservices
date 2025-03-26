@@ -2,9 +2,10 @@ filebeat.inputs:
   - type: container
     paths:
       - /var/lib/docker/containers/*/*.log
-    json.keys_under_root: true
-    json.add_error_key: true
-    json.message_key: log
+    multiline:
+      pattern: '^\['
+      negate: false
+      match: before
 
 processors:
   - add_docker_metadata:

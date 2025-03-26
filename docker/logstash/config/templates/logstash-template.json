@@ -1,0 +1,25 @@
+{
+  "index_patterns": ["*"],
+  "template": {
+    "settings": {
+      "number_of_shards": 1,
+      "number_of_replicas": 0
+    },
+    "mappings": {
+      "properties": {
+        "@timestamp": { "type": "date" },
+        "log_level": { "type": "keyword" },
+        "log_message": { "type": "text" },
+        "raw_message": { "type": "text" },
+        "readable_message": { "type": "text" },
+        "service_name": { "type": "keyword" },
+        "container": {
+          "properties": {
+            "id": { "type": "keyword" },
+            "name": { "type": "keyword" }
+          }
+        }
+      }
+    }
+  }
+} 

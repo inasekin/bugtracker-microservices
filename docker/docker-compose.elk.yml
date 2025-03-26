@@ -16,19 +16,27 @@ services:
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
       - xpack.security.enabled=false
+      - cluster.routing.allocation.disk.watermark.low=90%
+      - cluster.routing.allocation.disk.watermark.high=95%
+      - cluster.routing.allocation.disk.watermark.flood_stage=97%
+      - cluster.info.update.interval=1m
     ulimits:
       memlock:
         soft: -1
         hard: -1
     volumes:
-      - elasticsearch_data:/usr/share/elasticsearch/data
+      - ./elk/data:/usr/share/elasticsearch/data
     ports:
       - "9200:9200"
     networks:
       - elk
       - gateway_network
     healthcheck:
-      test: ["CMD-SHELL", "curl -s http://localhost:9200/_cluster/health | grep -q '\"status\":\"green\"\\|\"status\":\"yellow\"'"]
+      test:
+        [
+          "CMD-SHELL",
+          "curl -s http://localhost:9200/_cluster/health | grep -q '\"status\":\"green\"\\|\"status\":\"yellow\"'",
+        ]
       interval: 30s
       timeout: 30s
       retries: 3
@@ -40,10 +48,11 @@ services:
     volumes:
       - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro
       - ./logstash/pipeline:/usr/share/logstash/pipeline:ro
+      - ./logstash/config/templates:/usr/share/logstash/config/templates:ro
     ports:
       - "5044:5044"
-      - "9500:5000/tcp"  # Изменено с 5000 на 9500 - совсем другой диапазон
-      - "9500:5000/udp"  # Изменено с 5000 на 9500 - совсем другой диапазон
+      - "9500:5000/tcp"
+      - "9500:5000/udp"
       - "9600:9600"
     environment:
       LS_JAVA_OPTS: "-Xmx256m -Xms256m"
@@ -60,8 +69,10 @@ services:
     ports:
       - "5601:5601"
     environment:
-      ELASTICSEARCH_URL: http://elasticsearch:9200
       ELASTICSEARCH_HOSTS: '["http://elasticsearch:9200"]'
+      ELASTICSEARCH_USERNAME: ""
+      ELASTICSEARCH_PASSWORD: ""
+      XPACK_SECURITY_ENABLED: "false"
     networks:
       - elk
       - gateway_network

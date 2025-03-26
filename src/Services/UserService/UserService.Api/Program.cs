@@ -21,6 +21,7 @@ Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
     .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
     .Enrich.FromLogContext()
+    .Enrich.WithProperty("Application", "UserService")
     .WriteTo.Console()
     .WriteTo.File("logs/userservice-.txt", rollingInterval: RollingInterval.Day)
     .CreateLogger();
