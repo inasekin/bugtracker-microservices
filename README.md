@@ -122,6 +122,17 @@ git commit -m "feat: update submodule <имя>”
    make services-down
    ```
 
+### Запуск сервисов для логов
+1. Запуск
+   ```bash
+   make elk-up
+   ```
+   
+2. Остановка
+   ```bash
+   make elk-down
+   ```
+
 ### Запуск frontend
 1. Соберите и запустите фронтенд:
    ```bash

@@ -94,6 +94,24 @@ jobs:
           known_hosts: ${{ secrets.VM_IP_ADDRESS }}
           if_key_exists: replace
 
+      - name: Check server resources and cleanup
+        run: |
+          ssh -o StrictHostKeyChecking=no yc-user@${{ secrets.VM_IP_ADDRESS }} '
+            echo "=== Checking server resources ==="
+            df -h
+            free -h
+            kubectl get nodes -o=custom-columns=NAME:.metadata.name,CPU:.status.capacity.cpu,MEMORY:.status.capacity.memory
+            
+            echo "=== Cleaning up unused resources ==="
+            # Очистка неиспользуемых Docker ресурсов
+            docker system prune -af --volumes || true
+            # Удаление устаревших образов
+            docker image prune -a -f || true
+            
+            echo "=== Checking cluster resources ==="
+            kubectl get po -A -o custom-columns=NAMESPACE:.metadata.namespace,NAME:.metadata.name,MEM_REQ:.spec.containers[*].resources.requests.memory,MEM_LIM:.spec.containers[*].resources.limits.memory,CPU_REQ:.spec.containers[*].resources.requests.cpu,CPU_LIM:.spec.containers[*].resources.limits.cpu | sort -k 3 -r
+          '
+
       - name: Setup Kubernetes Config and Update Manifests
         run: |
           ssh -o StrictHostKeyChecking=no yc-user@${{ secrets.VM_IP_ADDRESS }} '
@@ -164,4 +182,10 @@ jobs:
             kubectl get pods -n bugtracker
             kubectl get services -n bugtracker
             kubectl get ingress -n bugtracker
+            
+            echo "=== Resource Usage After Deployment ==="
+            df -h
+            free -h
+            kubectl top nodes || echo "metrics-server not available"
+            kubectl top pods -n bugtracker || echo "metrics-server not available"
           '

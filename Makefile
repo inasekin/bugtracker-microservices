@@ -215,3 +215,62 @@ all-down:
 	$(MAKE) services-down
 	$(MAKE) brokers-down
 	$(MAKE) db-down
+
+################################################################################
+# ELK Stack (Elasticsearch, Logstash, Kibana)
+################################################################################
+
+## elk-up
+## Запускает стек ELK для логирования и мониторинга
+elk-up:
+	@echo "Запускаем ELK стек (Elasticsearch, Logstash, Kibana)..."
+	$(DOCKER_COMPOSE) -f $(DOCKER_FOLDER)/docker-compose.elk.yml up -d --build
+
+## elk-down
+## Останавливает стек ELK
+elk-down:
+	@echo "Останавливаем ELK стек..."
+	$(DOCKER_COMPOSE) -f $(DOCKER_FOLDER)/docker-compose.elk.yml down
+
+## elk-restart
+## Перезапускает стек ELK
+elk-restart:
+	$(MAKE) elk-down
+	$(MAKE) elk-up
+
+## elk-logs
+## Показывает логи стека ELK
+elk-logs:
+	$(DOCKER_COMPOSE) -f $(DOCKER_FOLDER)/docker-compose.elk.yml logs -f
+
+## monitoring-up
+## Запускает стек мониторинга и логирования
+monitoring-up: elk-up
+	@echo "Стек мониторинга и логирования запущен"
+
+## monitoring-down
+## Останавливает стек мониторинга и логирования
+monitoring-down: elk-down
+	@echo "Стек мониторинга и логирования остановлен"
+
+################################################################################
+# Все вместе с мониторингом
+################################################################################
+
+## all-with-monitoring-up
+## Запускает инфраструктуру, микросервисы, фронтенд и мониторинг
+all-with-monitoring-up:
+	$(MAKE) db-up
+	$(MAKE) brokers-up
+	$(MAKE) services-up
+	$(MAKE) frontend-up
+	$(MAKE) monitoring-up
+
+## all-with-monitoring-down
+## Останавливает всё (инфраструктуру, микросервисы, фронтенд и мониторинг)
+all-with-monitoring-down:
+	$(MAKE) frontend-down
+	$(MAKE) services-down
+	$(MAKE) brokers-down
+	$(MAKE) db-down
+	$(MAKE) monitoring-down
