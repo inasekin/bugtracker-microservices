@@ -36,7 +36,7 @@ namespace Bugtracker.WebHost.Controllers
         public async Task<ActionResult<IEnumerable<ProjectResponse>>> GetProjectsAsync()
         {
             IEnumerable<Project> projects =  await _projects.GetAllAsync();
-            IEnumerable<ProjectResponse> projectsResponse = projects.Select(p => MapProject(p));
+            IEnumerable<ProjectResponse> projectsResponse = projects.OrderBy(p=>p.Name).Select(p => MapProject(p));
             return Ok(projectsResponse);
         }
 
