@@ -1,7 +1,6 @@
-version: '3.9'
 networks:
   gateway_network:
-    external: false
+    driver: bridge
 
 services:
   gatewayservice:
@@ -15,6 +14,7 @@ services:
     depends_on:
       - userservice
       - projectservice
+      - commentsservice
     networks:
       - gateway_network
 
@@ -41,5 +41,19 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings__Default=Host=projectdb;Database=project_db;Username=postgres;Password=postgres;
+    networks:
+      - gateway_network
+
+  commentsservice:
+    build:
+      context: ../
+      dockerfile: ./src/Services/CommentsService/Dockerfile
+    container_name: commentsservice
+    ports:
+      - "5004:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - MongoDBSettings__Connection=mongodb://admin:password@commentsdb:27017/
+      - MongoDBSettings__DatabaseName=CommentsServiceDB
     networks:
       - gateway_network

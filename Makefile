@@ -2,7 +2,7 @@
 # ПЕРЕМЕННЫЕ
 ################################################################################
 
-SERVICES = ProjectService UserService
+SERVICES = ProjectService UserService CommentsService
 
 # Папка, где лежат эти сервисы
 SERVICES_PATH = ./src/Services
@@ -124,21 +124,31 @@ migrate-all:
 # Docker Compose (разделённые)
 ################################################################################
 
-## infra-up
+## db-up
 ## Запускает инфраструктурные сервисы (БД, RabbitMQ, pgAdmin)
-infra-up:
-	$(DOCKER_COMPOSE) -f $(DOCKER_FOLDER)/docker-compose.infra.yml up -d --build
+db-up:
+	$(DOCKER_COMPOSE) -f $(DOCKER_FOLDER)/docker-compose.db.yml up -d --build
 
-## infra-down
+## db-down
 ## Останавливает инфраструктурные сервисы
-infra-down:
-	$(DOCKER_COMPOSE) -f $(DOCKER_FOLDER)/docker-compose.infra.yml down
+db-down:
+	$(DOCKER_COMPOSE) -f $(DOCKER_FOLDER)/docker-compose.db.yml down
 
-## infra-restart
+## brokers-up
+## Запускает инфраструктурные сервисы (БД, RabbitMQ, pgAdmin)
+brokers-up:
+	$(DOCKER_COMPOSE) -f $(DOCKER_FOLDER)/docker-compose.brokers.yml up -d --build
+
+## brokers-down
+## Останавливает инфраструктурные сервисы
+brokers-down:
+	$(DOCKER_COMPOSE) -f $(DOCKER_FOLDER)/docker-compose.brokers.yml down
+
+## db-restart
 ## Перезапускает инфраструктурные сервисы
-infra-restart:
-	$(MAKE) infra-down
-	$(MAKE) infra-up
+db-restart:
+	$(MAKE) db-down
+	$(MAKE) db-up
 
 ## services-up
 ## Запускает микросервисы
@@ -193,7 +203,8 @@ frontend-down:
 ## all-up
 ## Запускает инфраструктуру, микросервисы и фронтенд
 all-up:
-	$(MAKE) infra-up
+	$(MAKE) db-up
+	$(MAKE) brokers-up
 	$(MAKE) services-up
 	$(MAKE) frontend-up
 
@@ -202,4 +213,64 @@ all-up:
 all-down:
 	$(MAKE) frontend-down
 	$(MAKE) services-down
-	$(MAKE) infra-down
+	$(MAKE) brokers-down
+	$(MAKE) db-down
+
+################################################################################
+# ELK Stack (Elasticsearch, Logstash, Kibana)
+################################################################################
+
+## elk-up
+## Запускает стек ELK для логирования и мониторинга
+elk-up:
+	@echo "Запускаем ELK стек (Elasticsearch, Logstash, Kibana)..."
+	$(DOCKER_COMPOSE) -f $(DOCKER_FOLDER)/docker-compose.elk.yml up -d --build
+
+## elk-down
+## Останавливает стек ELK
+elk-down:
+	@echo "Останавливаем ELK стек..."
+	$(DOCKER_COMPOSE) -f $(DOCKER_FOLDER)/docker-compose.elk.yml down
+
+## elk-restart
+## Перезапускает стек ELK
+elk-restart:
+	$(MAKE) elk-down
+	$(MAKE) elk-up
+
+## elk-logs
+## Показывает логи стека ELK
+elk-logs:
+	$(DOCKER_COMPOSE) -f $(DOCKER_FOLDER)/docker-compose.elk.yml logs -f
+
+## monitoring-up
+## Запускает стек мониторинга и логирования
+monitoring-up: elk-up
+	@echo "Стек мониторинга и логирования запущен"
+
+## monitoring-down
+## Останавливает стек мониторинга и логирования
+monitoring-down: elk-down
+	@echo "Стек мониторинга и логирования остановлен"
+
+################################################################################
+# Все вместе с мониторингом
+################################################################################
+
+## all-with-monitoring-up
+## Запускает инфраструктуру, микросервисы, фронтенд и мониторинг
+all-with-monitoring-up:
+	$(MAKE) db-up
+	$(MAKE) brokers-up
+	$(MAKE) services-up
+	$(MAKE) frontend-up
+	$(MAKE) monitoring-up
+
+## all-with-monitoring-down
+## Останавливает всё (инфраструктуру, микросервисы, фронтенд и мониторинг)
+all-with-monitoring-down:
+	$(MAKE) frontend-down
+	$(MAKE) services-down
+	$(MAKE) brokers-down
+	$(MAKE) db-down
+	$(MAKE) monitoring-down

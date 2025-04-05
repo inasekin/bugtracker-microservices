@@ -3,6 +3,7 @@
 Исходный код - https://github.com/inasekin/microservices-monorepo
 
 ![CI](https://github.com/pofoq/otus/workflows/CI/badge.svg)
+[![Maintainability](https://api.codeclimate.com/v1/badges/385c33b7e214963a95ca/maintainability)](https://codeclimate.com/github/inasekin/bugtracker-microservices/maintainability)
 
 ## О проекте
 Этот репозиторий представляет собой монорепозиторий для микросервисного проекта на .NET. Включает несколько микросервисов, инфраструктурные компоненты, базу данных и фронтенд-часть.
@@ -33,6 +34,10 @@ Git-модули позволяют добавлять другие Git-репо
 git submodule add <URL> <путь>
 ```
 #### Инициализируйте и скачайте подмодуль:
+```bash
+git submodule update --recursive --remote
+```
+или
 ```bash
 git submodule update --init --recursive
 ```
@@ -81,15 +86,26 @@ git commit -m "feat: update submodule <имя>”
 
 ## Шаги запуска
 
-### Запуск инфраструктуры (БД, RabbitMQ и др.)
+### Запуск баз данных
 
-1. Соберите инфраструктуру:
+1. Соберите базы данных:
    ```bash
-   make infra-up
+   make db-up
    ```
 2. Остановите инфраструктуру:
    ```bash
-   make infra-down
+   make db-down
+   ```
+
+### Запуск остальных вспомогательных сервисов (RabbitMQ и др.)
+
+1. Поднять:
+   ```bash
+   make brokers-up
+   ```
+2. Остановить:
+   ```bash
+   make brokers-down
    ```
 
 ### Запуск микросервисов
@@ -106,12 +122,26 @@ git commit -m "feat: update submodule <имя>”
    make services-down
    ```
 
+### Запуск сервисов для логов
+1. Запуск
+   ```bash
+   make elk-up
+   ```
+   
+2. Остановка
+   ```bash
+   make elk-down
+   ```
+
 ### Запуск frontend
 1. Соберите и запустите фронтенд:
    ```bash
    make frontend-up
    ```
 2. Не забудьте создать .env файл в директории frontend
+```
+VITE_API_URL=http://localhost:5010
+```
 3. Остановите фронтенд:
    ```bash
    make frontend-down
@@ -136,7 +166,7 @@ dotnet ef database update \
 
 При запуске отдельного сервиса swagger будет доступен по адресу - http://localhost:{порт из Properties/launchSettings.json}/api/v1/{префикс сервиса}/swagger/index.html
 
-Пример - http://localhost:6002/api/v1/user/swagger/index.html
+Пример - http://localhost:6002/api/user/swagger/index.html
 
 Если запуск первый раз, то нужно будет выполнить миграции
 

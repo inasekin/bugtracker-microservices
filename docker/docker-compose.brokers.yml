@@ -1,0 +1,59 @@
+networks:
+  gateway_network:
+    driver: bridge
+
+services:
+  # RabbitMQ
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    networks:
+      - gateway_network
+    restart: always
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis
+  redis:
+    image: redis:7.2-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes --requirepass redisPassword
+    networks:
+      - gateway_network
+    restart: always
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "redisPassword", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis Commander - веб-интерфейс для мониторинга Redis
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: redis-commander
+    environment:
+      - REDIS_HOSTS=local:redis:6379:0:redisPassword
+    ports:
+      - "8085:8081"
+    networks:
+      - gateway_network
+    depends_on:
+      - redis
+    restart: always
+
+volumes:
+  redis_data:
+    driver: local

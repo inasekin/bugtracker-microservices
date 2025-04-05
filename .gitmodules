@@ -1,3 +1,6 @@
 [submodule "frontend"]
 	path = frontend
 	url = https://github.com/inasekin/bugtracker-frontend
+[submodule "kubernetes"]
+	path = kubernetes
+	url = https://github.com/inasekin/kubernetes-config-bugtracker
