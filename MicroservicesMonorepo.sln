@@ -1,4 +1,5 @@
-﻿Microsoft Visual Studio Solution File, Format Version 12.00
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
@@ -20,11 +21,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserService.DAL", "src\Serv
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ProjectService", "ProjectService", "{8A8D71A1-372B-4AD3-B2B5-26374937E5CD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectService.Core", "src\Services\ProjectService\Core\Core.csproj", "{FA64A24E-D404-4E7D-89A8-B87E134F697F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core", "src\Services\ProjectService\Core\Core.csproj", "{FA64A24E-D404-4E7D-89A8-B87E134F697F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectService.DataAccess", "src\Services\ProjectService\DataAccess\DataAccess.csproj", "{D7E675A3-9872-47D6-B906-797B7B866534}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataAccess", "src\Services\ProjectService\DataAccess\DataAccess.csproj", "{D7E675A3-9872-47D6-B906-797B7B866534}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectService.WebHost", "src\Services\ProjectService\WebHost\WebHost.csproj", "{C086AC72-ADC7-432C-99D8-A8D60A0B44CA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebHost", "src\Services\ProjectService\WebHost\WebHost.csproj", "{C086AC72-ADC7-432C-99D8-A8D60A0B44CA}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GatewayService", "GatewayService", "{E6F8D74B-1D55-4311-8832-6D8E5DA9BEB2}"
 EndProject
@@ -40,13 +41,18 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommentsService.Domain", "s
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CommentsService", "CommentsService", "{4C9FBA49-73A1-4BCD-9A66-2B436DF028C1}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IssueService", "IssueService", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IssueService.Domain", "src\Services\IssueService\IssueService.Domain\IssueService.Domain.csproj", "{8C3A970F-1769-00C4-FA96-EB897EFE3879}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IssueService.DAL", "src\Services\IssueService\IssueService.DAL\IssueService.DAL.csproj", "{E0EB3C9F-9BF7-4D02-2673-9B5A7BC87E44}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IssueService.Api", "src\Services\IssueService\IssueService.Api\IssueService.Api.csproj", "{5B948C2D-B0E8-2545-EF59-6863B9705575}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{AF576B94-0CA7-4F1C-AC40-75213F8F1DA7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -97,6 +103,18 @@ Global
 		{4E5B6CB5-22B4-40ED-A8AE-6160E8FA6144}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4E5B6CB5-22B4-40ED-A8AE-6160E8FA6144}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4E5B6CB5-22B4-40ED-A8AE-6160E8FA6144}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8C3A970F-1769-00C4-FA96-EB897EFE3879}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8C3A970F-1769-00C4-FA96-EB897EFE3879}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8C3A970F-1769-00C4-FA96-EB897EFE3879}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8C3A970F-1769-00C4-FA96-EB897EFE3879}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E0EB3C9F-9BF7-4D02-2673-9B5A7BC87E44}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E0EB3C9F-9BF7-4D02-2673-9B5A7BC87E44}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E0EB3C9F-9BF7-4D02-2673-9B5A7BC87E44}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E0EB3C9F-9BF7-4D02-2673-9B5A7BC87E44}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5B948C2D-B0E8-2545-EF59-6863B9705575}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5B948C2D-B0E8-2545-EF59-6863B9705575}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5B948C2D-B0E8-2545-EF59-6863B9705575}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5B948C2D-B0E8-2545-EF59-6863B9705575}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -120,6 +138,10 @@ Global
 		{012673C4-E909-41A7-A836-B26D0236FA3D} = {4C9FBA49-73A1-4BCD-9A66-2B436DF028C1}
 		{4E5B6CB5-22B4-40ED-A8AE-6160E8FA6144} = {4C9FBA49-73A1-4BCD-9A66-2B436DF028C1}
 		{4C9FBA49-73A1-4BCD-9A66-2B436DF028C1} = {F190F114-F79F-47B4-A5FE-EB7078B4F8DF}
+		{02EA681E-C7D8-13C7-8484-4AC65E1B71E8} = {F190F114-F79F-47B4-A5FE-EB7078B4F8DF}
+		{8C3A970F-1769-00C4-FA96-EB897EFE3879} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{E0EB3C9F-9BF7-4D02-2673-9B5A7BC87E44} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{5B948C2D-B0E8-2545-EF59-6863B9705575} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1DF65D93-A07E-4A1B-A58C-75EAA0D1067B}
