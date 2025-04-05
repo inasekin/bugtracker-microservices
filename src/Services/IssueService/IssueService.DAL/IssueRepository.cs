@@ -17,15 +17,22 @@ public class IssueRepository
     return await _context.Issues.FirstOrDefaultAsync(u => u.Id == id);
   }
 
-  public async Task<List<Issue>> GetAllAsync()
-  {
-    return await _context.Issues.ToListAsync();
-  }
+    public async Task<List<Issue>> GetAllAsync()
+    {
+        return await _context.Issues.ToListAsync();
+    }
 
-  public async Task AddAsync(Issue user)
+    public async Task<List<Issue>> GetAllAsync(Func<IQueryable<Issue>, IQueryable<Issue>> filter)
+    {
+        var query = filter(_context.Issues);
+        return await query.ToListAsync();
+    }
+
+    public async Task<Issue> AddAsync(Issue user)
   {
-    _context.Issues.Add(user);
+    Issue issue = _context.Issues.Add(user).Entity;
     await _context.SaveChangesAsync();
+    return issue;
   }
 
   public async Task UpdateAsync(Issue user)

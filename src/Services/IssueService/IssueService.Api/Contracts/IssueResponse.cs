@@ -1,8 +1,8 @@
 using IssueService.Domain.Enums;
 
-namespace IssueService.Domain.Models;
+namespace IssueService.Api.Contracts;
 
-public class Issue
+public class IssueResponse
 {
     public Guid Id { get; set; }
     public string Title { get; set; } = null!;
