@@ -3,8 +3,9 @@ using FileService.Domain.Models;
 namespace FileService.Domain.Services;
 public interface IFileService
 {
-    Task SaveFileAsync(string fileName, byte[] fileBytes);
-    Task<FileModel?> GetFileAsync(Guid guid);
-    Task<byte[]?> GetFileDataAsync(Guid guid);
-    Task DeleteFileAsync(Guid guid);
+    Task<FileModel> SaveFileAsync(string fileName, Stream stream, CancellationToken cancellationToken);
+    Task<FileModel?> GetFileAsync(Guid guid, CancellationToken cancellationToken);
+    Task<byte[]?> GetFileDataAsync(Guid guid, CancellationToken cancellationToken);
+    Task DeleteFileAsync(Guid guid, CancellationToken cancellationToken);
+    Task CommitChangesAsync(CancellationToken cancellationToken);
 }

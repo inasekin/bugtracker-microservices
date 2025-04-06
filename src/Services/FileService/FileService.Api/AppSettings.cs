@@ -1,7 +1,8 @@
+using FileService.Domain;
+
 namespace FileService.Api;
 
-public sealed class AppSettings
+public sealed class AppSettings : FileStorageSettings
 {
-  public string ConnectionString { get; set; } = null!;
-  public string FolderPath { get; set; } = null!;
+    public string ConnectionString { get; set; } = null!;
 }

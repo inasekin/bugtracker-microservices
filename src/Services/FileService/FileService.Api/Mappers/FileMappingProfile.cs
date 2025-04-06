@@ -1,13 +1,14 @@
 using AutoMapper;
-using FileService.DAL.Entities;
+using FileService.Api.Contracts;
 using FileService.Domain.Models;
 
 namespace FileService.Api.Mappers;
 
-public class FileMappingProfile : Profile
+public sealed class FileMappingProfile : Profile
 {
     public FileMappingProfile()
     {
-        CreateMap<FileModel, FileEntity>();
+        CreateMap<FileModel, FileInfoResponse>();
+        CreateMap<FileInfoResponse, FileModel>();
     }
 }

@@ -1,11 +1,7 @@
-using AutoMapper;
 using FileService.Api;
-using FileService.Api.Mappers;
-using FileService.DAL;
-using FileService.DAL.Repositories;
-using FileService.DAL.Repositories.Implementation;
-using FileService.Domain.Services;
-using Microsoft.EntityFrameworkCore;
+using FileService.Api.Extensions;
+using FileService.DAL.Extensions;
+using FileService.Domain.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,31 +11,21 @@ Console.WriteLine($"Среда выполнения: {environment}");
 var appSettings = builder.Configuration.GetSection(nameof(AppSettings)).Get<AppSettings>();
 
 // Подключение к базе данных
-var conn = appSettings?.ConnectionString
+var connectionString = appSettings?.ConnectionString
            ?? throw new InvalidOperationException("Строка подключения не найдена.");
 
 var services = builder.Services;
 
+services.Configure<AppSettings>(builder.Configuration.GetSection(nameof(AppSettings)));
+
 // Регистрация DbContext
-services.AddDbContext<FileDbContext>(options =>
-    options.UseNpgsql(conn)
-        .EnableSensitiveDataLogging()
-        .LogTo(Console.WriteLine));
-Console.WriteLine("Успешное подключение к базе данных.");
+services.AddDataAccessLayer(connectionString);
 
 // Add services to the container.
+services.AddDomainServices(builder.Configuration.GetSection(nameof(AppSettings)));
 
-services.AddScoped(typeof(IRepository<>), typeof(RepositoryBase<>));
-
-services.AddScoped(typeof(IFileService), typeof(LocalFileService));
-
-var mapperConfiguration = new MapperConfiguration(cfg =>
-{
-    cfg.AddProfile<FileMappingProfile>();
-});
-mapperConfiguration.AssertConfigurationIsValid();
-services.AddSingleton<IMapper>(new Mapper(mapperConfiguration));
-
+// Add automapper 
+services.AddMapperProfiles();
 
 services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

@@ -9,5 +9,6 @@ public class FileMappingProfile : Profile
     public FileMappingProfile()
     {
         CreateMap<FileModel, FileEntity>();
+        CreateMap<FileEntity, FileModel>();
     }
 }

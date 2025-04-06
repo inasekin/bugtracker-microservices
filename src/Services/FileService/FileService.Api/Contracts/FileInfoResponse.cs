@@ -1,6 +1,6 @@
-namespace FileService.Api.Dtos;
+namespace FileService.Api.Contracts;
 
-public class FileDto
+public sealed class FileInfoResponse
 {
     public Guid Id { get; set; }
     public string Name { get; set; } = null!;
