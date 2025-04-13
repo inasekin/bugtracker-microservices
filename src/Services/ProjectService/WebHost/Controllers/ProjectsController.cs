@@ -149,7 +149,7 @@ namespace Bugtracker.WebHost.Controllers
                     List<string> roles = ur.Value;
                     foreach(string role in roles)
                     {
-                        var u = oldUserRoles.FirstOrDefault(ur => ur.UserId == userId && ur.RoleId == role);
+                        var u = oldUserRoles?.FirstOrDefault(ur => ur.UserId == userId && ur.RoleId == role);
                         if (u != null)
                             project.UserRoles.Add(u);
                         else

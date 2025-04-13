@@ -8,8 +8,8 @@ public class IssueRequest
     public string Description { get; set; } = null!;
 
     public IssueStatus Status { get; set; } = IssueStatus.Todo;
-    public IssuePriority Priority { get; set; }
-    public IssueType Type { get; set; }
+    public IssuePriority Priority { get; set; } = IssuePriority.Medium;
+    public IssueType Type { get; set; } = IssueType.Task;
 
     public Guid AuthorId { get; set; }
     public Guid ProjectId { get; set; }
