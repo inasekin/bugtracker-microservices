@@ -57,3 +57,18 @@ services:
       - MongoDBSettings__DatabaseName=CommentsServiceDB
     networks:
       - gateway_network
+
+  fileservice:
+    build:
+      context: ../
+      dockerfile: ./src/Services/FileService/Dockerfile
+    container_name: fileservice
+    ports:
+      - "5005:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - AppSettings__ConnectionString=Host=filesdb;Port=filedb;Database=files_db;Username=postgres;Password=postgres;
+      - AppSettings__FileStorage=FileStorage
+      - AppSettings__UseBaseDir=true
+    networks:
+      - gateway_network
