@@ -36,8 +36,16 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseDeveloperExceptionPage(); // Показывает детальную информацию об ошибках
+    app.UseSwagger(c =>
+    {
+        c.RouteTemplate = "api/files/swagger/{documentName}/swagger.json";
+    });
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/api/files/swagger/v1/swagger.json", "Files Service API");
+        c.RoutePrefix = "api/files/swagger";
+    });
 }
 
 app.UseAuthorization();
