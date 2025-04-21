@@ -14,6 +14,7 @@ services:
     depends_on:
       - userservice
       - projectservice
+      - issueservice
       - commentsservice
     networks:
       - gateway_network
@@ -72,3 +73,17 @@ services:
       - AppSettings__UseBaseDir=true
     networks:
       - gateway_network
+
+  issueservice:
+    build:
+      context: ../
+      dockerfile: ./src/Services/IssueService/Dockerfile
+    container_name: issueservice
+    ports:
+      - "5006:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__Default=Host=projectdb;Database=project_db;Username=postgres;Password=postgres;
+    networks:
+      - gateway_network
+

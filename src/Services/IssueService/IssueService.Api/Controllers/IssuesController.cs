@@ -3,6 +3,8 @@ using IssueService.Api.Contracts;
 using IssueService.DAL;
 using IssueService.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
+using FileInfo = IssueService.Domain.Models.FileInfo;
 
 namespace Bugtracker.WebHost.Controllers
 {
@@ -53,6 +55,8 @@ namespace Bugtracker.WebHost.Controllers
             if (issue == null)
                 return NotFound();
 
+            var files = issue.Files;
+
             IssueResponse response = MapProject(issue);
             return Ok(response);
         }
@@ -64,7 +68,8 @@ namespace Bugtracker.WebHost.Controllers
             MapProject(request, issue);
             await _issues.AddAsync(issue);
 
-            return Ok(issue);
+            var issueResponse = MapProject(issue);
+            return Ok(issueResponse);
         }
 
         [HttpPut("{id:guid}")]
@@ -101,9 +106,26 @@ namespace Bugtracker.WebHost.Controllers
             return response;
         }
 
+        /*private FileInfo MapProject(FileInfoDto fi)
+        {
+            FileInfo response = _mapper.Map<FileInfoDto, FileInfo>(fi);
+            return response;
+        }*/
+
         private void MapProject(IssueRequest request, Issue issue)
         {
             _mapper.Map(request, issue);
+
+            var updatedFiles = new List<FileInfo>();
+            foreach (var r in request.Files)
+            {
+                var i = issue.Files?.FirstOrDefault(i => i.Id == r.Id);
+                if (i != null)
+                    updatedFiles.Add(i);
+                else
+                    updatedFiles.Add(_mapper.Map<FileInfoDto, FileInfo>(r));
+            }
+            issue.Files = updatedFiles;
         }
 
         #endregion

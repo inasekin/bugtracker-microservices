@@ -18,4 +18,5 @@ public class Issue
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
     public DateTime? DueDate { get; set; }
+    public List<FileInfo> Files { get; set; } = null!;
 };

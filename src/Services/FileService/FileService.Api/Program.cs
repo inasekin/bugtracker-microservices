@@ -2,6 +2,7 @@ using FileService.Api;
 using FileService.Api.Extensions;
 using FileService.DAL.Extensions;
 using FileService.Domain.Extensions;
+using Microsoft.AspNetCore.Http.Features;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +27,24 @@ services.AddDomainServices(builder.Configuration.GetSection(nameof(AppSettings))
 services.AddMapperProfiles();
 
 services.AddControllers();
+services.Configure<FormOptions>(x => {
+    x.ValueLengthLimit = int.MaxValue;
+    x.MultipartBodyLengthLimit = long.MaxValue; // In case of multipart
+});
+ 
+// Настройка CORS
+string[] allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? new[] { "http://localhost:3000" };
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("NextJsPolicy", policy =>
+    {
+        policy.WithOrigins(allowedOrigins)
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials(); // Разрешение передачи куки
+    });
+});
+
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 services.AddEndpointsApiExplorer();
@@ -49,6 +68,11 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseAuthorization();
+
+if (app.Environment.IsDevelopment())
+    app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+else
+    app.UseCors("NextJsPolicy");
 
 app.MapControllers();
 

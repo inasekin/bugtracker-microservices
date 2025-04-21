@@ -17,4 +17,5 @@ public class IssueRequest
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
     public DateTime? DueDate { get; set; }
+    public List<FileInfoDto>? Files { get; set; }
 };
