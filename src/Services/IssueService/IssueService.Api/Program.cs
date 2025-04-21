@@ -36,7 +36,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IssueRepository>();
 //builder.Services.AddScoped<ProjectsEfDbInitializer>();
 
-var connectionString = builder.Configuration.GetConnectionString("BugtrackerIssuesDb");
+var connectionString = builder.Configuration.GetConnectionString("Default");
 builder.Services.AddDbContext<ApplicationDbContext>(x =>
 {
     //x.UseSqlite("Filename=bugtracker-projects.sqlite");

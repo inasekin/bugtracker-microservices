@@ -41,7 +41,7 @@ var microservices = new[]
     },
     new {
         Name = "IssueService",
-        Prefix = "issue",
+        Prefix = "issues",
         Host = "issueservice",
         Port = 80,
         SwaggerUrl = "http://issueservice/api/issues/swagger/v1/swagger.json"

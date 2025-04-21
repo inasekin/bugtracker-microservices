@@ -14,7 +14,10 @@ public class IssueRepository
 
   public async Task<Issue?> GetAsync(Guid id)
   {
-    return await _context.Issues.FirstOrDefaultAsync(u => u.Id == id);
+    return await _context.Issues
+            .Include(i=>i.Files)
+            .AsSplitQuery()
+            .FirstOrDefaultAsync(u => u.Id == id);
   }
 
     public async Task<List<Issue>> GetAllAsync()
@@ -28,26 +31,41 @@ public class IssueRepository
         return await query.ToListAsync();
     }
 
-    public async Task<Issue> AddAsync(Issue user)
-  {
-    Issue issue = _context.Issues.Add(user).Entity;
-    await _context.SaveChangesAsync();
-    return issue;
-  }
-
-  public async Task UpdateAsync(Issue user)
-  {
-    _context.Issues.Update(user);
-    await _context.SaveChangesAsync();
-  }
-
-  public async Task DeleteAsync(Guid id)
-  {
-    var user = await _context.Issues.FindAsync(id);
-    if (user != null)
+    public async Task<Issue> AddAsync(Issue issue)
     {
-      _context.Issues.Remove(user);
-      await _context.SaveChangesAsync();
+        _context.Issues.Add(issue);
+        foreach (var file in issue.Files)
+            _context.Files.Add(file);
+        await _context.SaveChangesAsync();
+        return issue;
     }
-  }
+
+    public async Task UpdateAsync(Issue issue)
+    {
+        List<Guid> oldIds = issue.Files.Select(f=>f.Id).ToList();
+        var dbFiles = _context.Files.Where(f => oldIds.Contains(f.Id)).Select(f=>f.Id).ToList();
+
+        foreach (var f in issue.Files)
+        {
+            // Так не работает, потому что мы сами ключ Id файла присваиваем и e.State в этом случае = EntityState.Modified и ошибка sql
+            // var e = _context.Entry(f);
+            // if(e.State == EntityState.Detached)
+            bool isTracked = dbFiles.Contains(f.Id);
+            if (!isTracked)
+                _context.Add(f);
+        }
+        _context.Issues.Update(issue);
+
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task DeleteAsync(Guid id)
+    {
+        var issue = await _context.Issues.FindAsync(id);
+        if (issue != null)
+        {
+            _context.Issues.Remove(issue);
+            await _context.SaveChangesAsync();
+        }
+    }
 }
