@@ -51,7 +51,7 @@ namespace Bugtracker.WebHost.Controllers
         [HttpGet("{id:guid}")]
         public async Task<ActionResult<IssueResponse>> GetIssueAsync(Guid id)
         {
-            var issue =  await _issues.GetAsync(id);
+            var issue = await _issues.GetAsync(id);
             if (issue == null)
                 return NotFound();
 
@@ -117,13 +117,16 @@ namespace Bugtracker.WebHost.Controllers
             _mapper.Map(request, issue);
 
             var updatedFiles = new List<FileInfo>();
-            foreach (var r in request.Files)
+            if (request.Files != null)
             {
-                var i = issue.Files?.FirstOrDefault(i => i.Id == r.Id);
-                if (i != null)
-                    updatedFiles.Add(i);
-                else
-                    updatedFiles.Add(_mapper.Map<FileInfoDto, FileInfo>(r));
+                foreach (var r in request.Files)
+                {
+                    var i = issue.Files?.FirstOrDefault(i => i.Id == r.Id);
+                    if (i != null)
+                        updatedFiles.Add(i);
+                    else
+                        updatedFiles.Add(_mapper.Map<FileInfoDto, FileInfo>(r));
+                }
             }
             issue.Files = updatedFiles;
         }

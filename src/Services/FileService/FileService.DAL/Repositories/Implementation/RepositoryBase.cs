@@ -20,6 +20,15 @@ public class RepositoryBase<T> : IRepository<T> where T : EntityBase
         return res!;
     }
 
+    public IEnumerable<T> GetAll(int take, int skip)
+    {
+        return DbSet
+            .OrderBy(t => t.Id)
+            .Skip(skip)
+            .Take(take)
+            .AsEnumerable();
+    }
+
     public async Task<T?> GetAsync(Guid guid, CancellationToken cancellationToken)
     {
         var entity = await DbSet.FindAsync([guid], cancellationToken);
