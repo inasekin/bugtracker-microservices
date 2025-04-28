@@ -12,44 +12,48 @@ public class FilesController(IFileService fileService, IMapper mapper) : Control
     private readonly IFileService _fileService = fileService;
     private readonly IMapper _mapper = mapper;
 
-    [HttpGet("info/{take:int}/{skip:int?}")]
-    public ActionResult<IEnumerable<FileInfoResponse>> GetAllFileInfo(int take, int skip = 0)
+    [HttpGet]
+    public ActionResult<IEnumerable<FileInfoResponse>> GetAllFileInfo([FromQuery] int take, [FromQuery] int skip)
     {
         var fileInfo = _fileService.GetAllFileInfo(take, skip);
-        if (fileInfo == null)
-            return NotFound();
+        if (fileInfo == null || !fileInfo.Any())
+            return NoContent();
 
-        return Ok(fileInfo.Select(f => _mapper.Map<FileInfoResponse>(fileInfo)));
+        return Ok(fileInfo.Select(_mapper.Map<FileInfoResponse>));
     }
 
-    [HttpGet("info/{id:guid}")]
-    public async Task<ActionResult<FileInfoResponse>> GetFileInfo(Guid id, CancellationToken cancellationToken)
+    [HttpGet("{id:guid}")]
+    public async Task<ActionResult<FileInfoResponse>> GetFileInfo([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         if (id == Guid.Empty)
             return BadRequest("Id is empty");
 
         var fileInfo = await _fileService.GetFileInfoAsync(id, cancellationToken);
         if (fileInfo == null)
-            return NotFound();
+            return NotFound("Информация о файле отсутствует");
 
         return Ok(_mapper.Map<FileInfoResponse>(fileInfo));
     }
 
-    [HttpGet("download/{id:guid}")]
-    public async Task<ActionResult> DownloadFile(Guid id, CancellationToken cancellationToken)
+    [HttpGet("show/{id:guid}")]
+    public async Task<ActionResult> GetPhysicalFile(Guid id, CancellationToken cancellationToken)
     {
         if (id == Guid.Empty)
             return BadRequest("Id is empty");
 
-        var fileInfo = await _fileService.GetFileInfoAsync(id, cancellationToken);
-        if (fileInfo == null)
-            return NotFound();
+        var file = await _fileService.GetFileInfoAsync(id, cancellationToken);
+        if (file == null)
+            return NotFound("Информация о файле отсутствует");
 
-        return File(fileInfo.Path, GetMimeType(fileInfo.Name));
+        var fileInfo = new FileInfo(file.Path);
+        if (!fileInfo.Exists)
+            return NotFound($"Файл '{file.Path}' не найден.");
+
+        return PhysicalFile(file.Path, GetMimeType(file.Name));
     }
 
-    [HttpGet("{id:guid}")]
-    public async Task<ActionResult> GetFile(Guid id, CancellationToken cancellationToken)
+    [HttpGet("download/{id:guid}")]
+    public async Task<ActionResult> DownloadFile(Guid id, CancellationToken cancellationToken)
     {
         if (id == Guid.Empty)
             return BadRequest("Id is empty");
@@ -60,9 +64,7 @@ public class FilesController(IFileService fileService, IMapper mapper) : Control
 
         // Проверяем, существует ли файл
         if (!System.IO.File.Exists(file.Path))
-        {
-            return NotFound($"Файл '{file.Name}' не найден.");
-        }
+            return NotFound($"Файл '{file.Path}' не найден.");
 
         // Читаем файл в виде массива байтов
         var fileBytes = System.IO.File.ReadAllBytes(file.Path);
@@ -77,13 +79,16 @@ public class FilesController(IFileService fileService, IMapper mapper) : Control
     [HttpPost]
     [Consumes("multipart/form-data")]
     [DisableRequestSizeLimit]
-    public async Task<ActionResult<FileInfoResponse[]>> AddFiles(IFormFileCollection files, CancellationToken cancellationToken)
+    public async Task<ActionResult<FileInfoResponse[]>> AddFiles([FromForm] IFormFileCollection files, CancellationToken cancellationToken)
     {
-        var request = HttpContext.Request;
-        files = request.Form.Files;
+        //var request = HttpContext.Request;
+        //files = request.Form.Files;
+        if (files == null || !files.Any())
+            return NoContent();
+
         var response = new List<FileInfoResponse>();
         foreach (var f in files)
-            response.Add(await UploadFile(f, f.Name, cancellationToken));
+            response.Add(await UploadFile(f, cancellationToken));
         return Ok(response);
     }
 
@@ -95,6 +100,11 @@ public class FilesController(IFileService fileService, IMapper mapper) : Control
 
         var res = await UploadFile(file, fileName, cancellationToken);
         return Ok(res);
+    }
+
+    private async Task<FileInfoResponse> UploadFile(IFormFile file, CancellationToken cancellationToken)
+    {
+        return await UploadFile(file, null, cancellationToken);
     }
 
     private async Task<FileInfoResponse> UploadFile(IFormFile file, string? fileName, CancellationToken cancellationToken)
