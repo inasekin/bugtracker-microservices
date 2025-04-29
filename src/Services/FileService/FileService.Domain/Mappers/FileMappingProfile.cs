@@ -9,6 +9,7 @@ public class FileMappingProfile : Profile
     public FileMappingProfile()
     {
         CreateMap<FileModel, FileEntity>();
-        CreateMap<FileEntity, FileModel>();
+        CreateMap<FileEntity, FileModel>()
+            .ForMember(model => model.Path, entity => entity.Ignore());
     }
 }

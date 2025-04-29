@@ -1,8 +1,10 @@
 using FileService.Api;
 using FileService.Api.Extensions;
+using FileService.DAL;
 using FileService.DAL.Extensions;
 using FileService.Domain.Extensions;
 using Microsoft.AspNetCore.Http.Features;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,7 +35,9 @@ services.Configure<FormOptions>(x => {
 });
  
 // Настройка CORS
-string[] allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? new[] { "http://localhost:3000" };
+string[] allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? ["http://localhost:3000"];
+foreach (var allowedOrigin in allowedOrigins)
+    Console.WriteLine(allowedOrigin);
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("NextJsPolicy", policy =>
@@ -51,6 +55,8 @@ services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
 
 var app = builder.Build();
+
+FileDbInitializer.Initialize(app.Services);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

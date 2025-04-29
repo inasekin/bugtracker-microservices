@@ -29,15 +29,31 @@ public class LocalFileService(
         return _repository.RemoveAsync(guid, cancellationToken);
     }
 
-    public async Task<FileModel?> GetFileAsync(Guid guid, CancellationToken cancellationToken)
+    public IEnumerable<FileModel> GetAllFileInfo(int take, int skip)
     {
-        var entity = await _repository.GetAsync(guid, cancellationToken);
-        return _mapper.Map<FileModel?>(entity);
+        var entities = _repository.GetAll(take, skip);
+
+        if (entities == null || !entities.Any())
+            return [];
+
+        return entities.Select(e =>
+        {
+            var m = _mapper.Map<FileModel>(e);
+            m.Path = Path.Combine(_settings.FolderPath, m.Name);
+            return m;
+        });
     }
 
-    public Task<byte[]?> GetFileDataAsync(Guid guid, CancellationToken cancellationToken)
+    public async Task<FileModel?> GetFileInfoAsync(Guid guid, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var entity = await _repository.GetAsync(guid, cancellationToken);
+        if (entity == null)
+            return null;
+
+        var model = _mapper.Map<FileModel>(entity);
+        model.Path = Path.Combine(_settings.FolderPath, model.Name);
+
+        return model;
     }
 
     public async Task<FileModel> SaveFileAsync(string fileName, Stream stream, CancellationToken cancellationToken)

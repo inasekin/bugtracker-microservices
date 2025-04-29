@@ -16,6 +16,7 @@ services:
       - projectservice
       - issueservice
       - commentsservice
+      - fileservice
     networks:
       - gateway_network
 
@@ -68,8 +69,8 @@ services:
       - "5005:80"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - AppSettings__ConnectionString=Host=filesdb;Port=filedb;Database=files_db;Username=postgres;Password=postgres;
-      - AppSettings__FileStorage=FileStorage
+      - AppSettings__ConnectionString=Host=filesdb;Database=files_db;Username=postgres;Password=postgres;
+      - AppSettings__FolderPath=FileStorage
       - AppSettings__UseBaseDir=true
     networks:
       - gateway_network
@@ -86,4 +87,3 @@ services:
       - ConnectionStrings__Default=Host=projectdb;Database=project_db;Username=postgres;Password=postgres;
     networks:
       - gateway_network
-
