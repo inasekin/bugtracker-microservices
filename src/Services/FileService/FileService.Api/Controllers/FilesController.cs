@@ -79,13 +79,14 @@ public class FilesController(IFileService fileService, IMapper mapper) : Control
     [HttpPost]
     [Consumes("multipart/form-data")]
     [DisableRequestSizeLimit]
-    public async Task<ActionResult<FileInfoResponse[]>> AddFiles([FromForm] IFormFileCollection files, CancellationToken cancellationToken)
+    public async Task<ActionResult<FileInfoResponse[]>> AddFiles([FromForm] IFormCollection form, CancellationToken cancellationToken)
     {
         //var request = HttpContext.Request;
         //files = request.Form.Files;
-        if (files == null || !files.Any())
-            return NoContent();
+        //if (files == null || !files.Any())
+        //    return NoContent();
 
+        IFormFileCollection files = form.Files;
         var response = new List<FileInfoResponse>();
         foreach (var f in files)
             response.Add(await UploadFile(f, cancellationToken));
