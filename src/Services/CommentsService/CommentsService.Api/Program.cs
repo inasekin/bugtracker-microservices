@@ -12,6 +12,21 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Настройка CORS
+string[] allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? ["http://localhost:3000"];
+foreach (var allowedOrigin in allowedOrigins)
+    Console.WriteLine(allowedOrigin);
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("NextJsPolicy", policy =>
+    {
+        policy.WithOrigins(allowedOrigins)
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials(); // Разрешение передачи куки
+    });
+});
+
 builder.Services.Configure<MongoDBSettings>(builder.Configuration.GetSection(nameof(MongoDBSettings)));
 BsonSerializer.RegisterSerializer(new GuidSerializer(GuidRepresentation.Standard));
 
@@ -35,6 +50,12 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseAuthorization();
+
+if (app.Environment.IsDevelopment())
+    app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+else
+    app.UseCors("NextJsPolicy");
+
 
 app.MapControllers();
 
