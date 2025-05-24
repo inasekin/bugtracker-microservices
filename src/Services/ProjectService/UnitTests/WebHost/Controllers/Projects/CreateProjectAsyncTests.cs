@@ -39,7 +39,6 @@ namespace Bugtracker.Tests.Projects.Controllers
 
             // Assert
             result.Result.Should().BeAssignableTo<OkObjectResult>();
-            //result.Value.Name.Should().Be(request.Name);
 
             _unitOfWork.Verify(i => i.SaveChangesAsync(), Times.Once());
             _projectsRepositoryMock.Verify(i => i.Add(It.IsAny<Project>()), Times.Once());

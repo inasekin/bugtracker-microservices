@@ -9,7 +9,6 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
-using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace Bugtracker.Tests.Projects.Controllers
 {
