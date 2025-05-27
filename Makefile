@@ -2,7 +2,7 @@
 # ПЕРЕМЕННЫЕ
 ################################################################################
 
-SERVICES = GatewayService ProjectService UserService CommentsService FileService
+SERVICES = GatewayService ProjectService UserService CommentsService VideoCallService FileService
 
 # Папка, где лежат эти сервисы
 SERVICES_PATH = ./src/Services
@@ -243,7 +243,7 @@ elk-restart:
 elk-logs:
 	$(DOCKER_COMPOSE) -f $(DOCKER_FOLDER)/docker-compose.elk.yml logs -f
 
-## monitoring-up
+## elk-up
 ## Запускает стек мониторинга и логирования
 monitoring-up: elk-up
 	@echo "Стек мониторинга и логирования запущен"
@@ -252,7 +252,6 @@ monitoring-up: elk-up
 ## Останавливает стек мониторинга и логирования
 monitoring-down: elk-down
 	@echo "Стек мониторинга и логирования остановлен"
-
 ################################################################################
 # Все вместе с мониторингом
 ################################################################################
@@ -264,7 +263,7 @@ all-with-monitoring-up:
 	$(MAKE) brokers-up
 	$(MAKE) services-up
 	$(MAKE) frontend-up
-	$(MAKE) monitoring-up
+	$(MAKE) elk-up
 
 ## all-with-monitoring-down
 ## Останавливает всё (инфраструктуру, микросервисы, фронтенд и мониторинг)
@@ -273,4 +272,5 @@ all-with-monitoring-down:
 	$(MAKE) services-down
 	$(MAKE) brokers-down
 	$(MAKE) db-down
-	$(MAKE) monitoring-down
+	$(MAKE) elk-down
+

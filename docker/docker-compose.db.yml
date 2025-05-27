@@ -1,76 +1,93 @@
 networks:
-  gateway_network:
-    driver: bridge
+    gateway_network:
+        driver: bridge
 
 services:
-  # Postgres для UserService
-  userdb:
-    image: postgres:14
-    container_name: userdb
-    environment:
-      POSTGRES_USER: "postgres"
-      POSTGRES_PASSWORD: "postgres"
-      POSTGRES_DB: "user_db"
-    ports:
-      - "5434:5432"
-    networks:
-      - gateway_network
-    healthcheck:
-      test: ["CMD", "pg_isready", "-U", "postgres"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+    # Postgres для UserService
+    userdb:
+        image: postgres:14
+        container_name: userdb
+        environment:
+            POSTGRES_USER: "postgres"
+            POSTGRES_PASSWORD: "postgres"
+            POSTGRES_DB: "user_db"
+        ports:
+            - "5434:5432"
+        networks:
+            - gateway_network
+        healthcheck:
+            test: ["CMD", "pg_isready", "-U", "postgres"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
 
-  # Postgres для ProjectService
-  projectdb:
-    image: postgres:14
-    container_name: projectdb
-    environment:
-      POSTGRES_USER: "postgres"
-      POSTGRES_PASSWORD: "postgres"
-      POSTGRES_DB: "project_db"
-    ports:
-      - "5435:5432"
-    networks:
-      - gateway_network
-    healthcheck:
-      test: ["CMD", "pg_isready", "-U", "postgres"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+    # Postgres для ProjectService
+    projectdb:
+        image: postgres:14
+        container_name: projectdb
+        environment:
+            POSTGRES_USER: "postgres"
+            POSTGRES_PASSWORD: "postgres"
+            POSTGRES_DB: "project_db"
+        ports:
+            - "5435:5432"
+        networks:
+            - gateway_network
+        healthcheck:
+            test: ["CMD", "pg_isready", "-U", "postgres"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
 
-  # Postgres для FileService
-  filesdb:
-    image: postgres:14
-    container_name: filesdb
-    environment:
-      POSTGRES_USER: "postgres"
-      POSTGRES_PASSWORD: "postgres"
-      POSTGRES_DB: "files_db"
-    ports:
-      - "5436:5432"
-    networks:
-      - gateway_network
-    healthcheck:
-      test: ["CMD", "pg_isready", "-U", "postgres"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+    # Postgres для FileService
+    filesdb:
+        image: postgres:14
+        container_name: filesdb
+        environment:
+            POSTGRES_USER: "postgres"
+            POSTGRES_PASSWORD: "postgres"
+            POSTGRES_DB: "files_db"
+        ports:
+            - "5436:5432"
+        networks:
+            - gateway_network
+        healthcheck:
+            test: ["CMD", "pg_isready", "-U", "postgres"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
 
-  # MongoDB для CommentsService
-  commentsdb:
-    image: mongo
-    container_name: commentsdb
-    restart: always
-    ports:
-      - "27017:27017"
-    networks:
-      - gateway_network
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: password
-    volumes:
-      - mongo_data:/data/db
+    # MongoDB для CommentsService
+    commentsdb:
+        image: mongo
+        container_name: commentsdb
+        restart: always
+        ports:
+            - "27017:27017"
+        networks:
+            - gateway_network
+        environment:
+            MONGO_INITDB_ROOT_USERNAME: admin
+            MONGO_INITDB_ROOT_PASSWORD: password
+        volumes:
+            - mongo_data:/data/db
 
+    # Postgres для Видеозвонков
+    videocalldb:
+        image: postgres:14
+        container_name: videocalldb
+        environment:
+            POSTGRES_USER: "postgres"
+            POSTGRES_PASSWORD: "postgres"
+            POSTGRES_DB: "videocall_db"
+        ports:
+            - "5437:5432"
+        networks:
+            - gateway_network
+        healthcheck:
+            test: ["CMD", "pg_isready", "-U", "postgres"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
 volumes:
-  mongo_data:
+    mongo_data:

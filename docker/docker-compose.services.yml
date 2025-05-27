@@ -1,89 +1,105 @@
 networks:
-  gateway_network:
-    driver: bridge
+    gateway_network:
+        driver: bridge
 
 services:
-  gatewayservice:
-    build: ../src/Gateway
-    container_name: gatewayservice
-    ports:
-      - "5010:80"
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - DOTNET_RUNNING_IN_CONTAINER=true
-    depends_on:
-      - userservice
-      - projectservice
-      - issueservice
-      - commentsservice
-      - fileservice
-    networks:
-      - gateway_network
+    gatewayservice:
+        build: ../src/Gateway
+        container_name: gatewayservice
+        ports:
+            - "5010:80"
+        environment:
+            - ASPNETCORE_ENVIRONMENT=Development
+            - DOTNET_RUNNING_IN_CONTAINER=true
+        depends_on:
+            - userservice
+            - projectservice
+            - issueservice
+            - commentsservice
+            - fileservice
+            - videocallservice
+        networks:
+            - gateway_network
 
-  userservice:
-    build:
-      context: ../
-      dockerfile: ./src/Services/UserService/Dockerfile
-    container_name: userservice
-    ports:
-      - "5002:80"
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__Default=Host=userdb;Database=user_db;Username=postgres;Password=postgres;
-    networks:
-      - gateway_network
+    userservice:
+        build:
+            context: ../
+            dockerfile: ./src/Services/UserService/Dockerfile
+        container_name: userservice
+        ports:
+            - "5002:80"
+        environment:
+            - ASPNETCORE_ENVIRONMENT=Development
+            - ConnectionStrings__Default=Host=userdb;Database=user_db;Username=postgres;Password=postgres;
+        networks:
+            - gateway_network
 
-  projectservice:
-    build:
-      context: ../
-      dockerfile: ./src/Services/ProjectService/Dockerfile
-    container_name: projectservice
-    ports:
-      - "5003:80"
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__Default=Host=projectdb;Database=project_db;Username=postgres;Password=postgres;
-    networks:
-      - gateway_network
+    projectservice:
+        build:
+            context: ../
+            dockerfile: ./src/Services/ProjectService/Dockerfile
+        container_name: projectservice
+        ports:
+            - "5003:80"
+        environment:
+            - ASPNETCORE_ENVIRONMENT=Development
+            - ConnectionStrings__Default=Host=projectdb;Database=project_db;Username=postgres;Password=postgres;
+        networks:
+            - gateway_network
 
-  commentsservice:
-    build:
-      context: ../
-      dockerfile: ./src/Services/CommentsService/Dockerfile
-    container_name: commentsservice
-    ports:
-      - "5004:80"
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - MongoDBSettings__Connection=mongodb://admin:password@commentsdb:27017/
-      - MongoDBSettings__DatabaseName=CommentsServiceDB
-    networks:
-      - gateway_network
+    commentsservice:
+        build:
+            context: ../
+            dockerfile: ./src/Services/CommentsService/Dockerfile
+        container_name: commentsservice
+        ports:
+            - "5004:80"
+        environment:
+            - ASPNETCORE_ENVIRONMENT=Development
+            - MongoDBSettings__Connection=mongodb://admin:password@commentsdb:27017/
+            - MongoDBSettings__DatabaseName=CommentsServiceDB
+        networks:
+            - gateway_network
 
-  fileservice:
-    build:
-      context: ../
-      dockerfile: ./src/Services/FileService/Dockerfile
-    container_name: fileservice
-    ports:
-      - "5005:80"
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - AppSettings__ConnectionString=Host=filesdb;Database=files_db;Username=postgres;Password=postgres;
-      - AppSettings__FolderPath=FileStorage
-      - AppSettings__UseBaseDir=true
-    networks:
-      - gateway_network
+    fileservice:
+        build:
+            context: ../
+            dockerfile: ./src/Services/FileService/Dockerfile
+        container_name: fileservice
+        ports:
+            - "5005:80"
+        environment:
+            - ASPNETCORE_ENVIRONMENT=Development
+            - AppSettings__ConnectionString=Host=filesdb;Database=files_db;Username=postgres;Password=postgres;
+            - AppSettings__FolderPath=FileStorage
+            - AppSettings__UseBaseDir=true
+        networks:
+            - gateway_network
 
-  issueservice:
-    build:
-      context: ../
-      dockerfile: ./src/Services/IssueService/Dockerfile
-    container_name: issueservice
-    ports:
-      - "5006:80"
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__Default=Host=projectdb;Database=project_db;Username=postgres;Password=postgres;
-    networks:
-      - gateway_network
+    issueservice:
+        build:
+            context: ../
+            dockerfile: ./src/Services/IssueService/Dockerfile
+        container_name: issueservice
+        ports:
+            - "5006:80"
+        environment:
+            - ASPNETCORE_ENVIRONMENT=Development
+            - ConnectionStrings__Default=Host=projectdb;Database=project_db;Username=postgres;Password=postgres;
+        networks:
+            - gateway_network
+
+    videocallservice:
+        build:
+            context: ../src/Services/VideoCallService
+            dockerfile: Dockerfile
+        container_name: videocallservice
+        ports:
+            - "5007:80"
+        environment:
+            - ASPNETCORE_ENVIRONMENT=Development
+            - Jwt__Key=ThisIsASecretKeyWithEnoughLength12345
+            - ConnectionStrings__Default=Host=videocalldb;Database=videocall_db;Username=postgres;Password=postgres
+            - Redis__ConnectionString=redis:6379,password=redisPassword,abortConnect=false
+        networks:
+            - gateway_network

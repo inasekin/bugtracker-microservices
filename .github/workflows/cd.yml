@@ -66,6 +66,15 @@ jobs:
           push: true
           tags: ghcr.io/${{ github.repository }}/commentsservice:latest
 
+      # VideoCall Service
+      - name: Build and push VideoCallService
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./src/Services/VideoCallService/Dockerfile
+          push: true
+          tags: ghcr.io/${{ github.repository }}/videocallservice:latest
+
       # Frontend
       - name: Build and push Frontend
         uses: docker/build-push-action@v4
@@ -167,6 +176,9 @@ jobs:
 
             echo "Checking comments-service deployment..."
             kubectl rollout status deployment/comments-service -n bugtracker --timeout=180s || echo "Comments service not ready"
+
+            echo "Checking videocall-service deployment..."
+            kubectl rollout status deployment/videocall-service -n bugtracker --timeout=180s || echo "VideoCall service not ready"
 
             echo "Checking frontend deployment..."
             kubectl rollout status deployment/frontend -n bugtracker --timeout=180s || echo "Frontend not ready"

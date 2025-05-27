@@ -59,6 +59,13 @@ var microservices = new[]
         Host = "fileservice",
         Port = 80,
         SwaggerUrl = "http://fileservice/api/files/swagger/v1/swagger.json"
+    },
+    new {
+        Name = "VideoCallService",
+        Prefix = "videocall",
+        Host = "videocallservice",
+        Port = 80,
+        SwaggerUrl = "http://videocallservice/api/videocall/swagger/v1/swagger.json"
     }
 };
 
@@ -212,6 +219,51 @@ var publicRoutes = new List<object>
     DownstreamScheme = "http",
     DownstreamHostAndPorts = new[] {
       new { Host = "userservice", Port = 80 }
+    }
+  },
+  // Получение комнаты по коду доступа (публичный доступ)
+  new {
+    Priority = 500,
+    UpstreamPathTemplate = "/api/videocall/rooms/code/{accessCode}",
+    UpstreamHttpMethod = new[] { "Get", "Options" },
+    DownstreamPathTemplate = "/api/videocall/rooms/code/{accessCode}",
+    DownstreamScheme = "http",
+    DownstreamHostAndPorts = new[] {
+      new { Host = "videocallservice", Port = 80 }
+    }
+  },
+  // Присоединение к комнате (публичный доступ)
+  new {
+    Priority = 500,
+    UpstreamPathTemplate = "/api/videocall/rooms/join",
+    UpstreamHttpMethod = new[] { "Post", "Options" },
+    DownstreamPathTemplate = "/api/videocall/rooms/join",
+    DownstreamScheme = "http",
+    DownstreamHostAndPorts = new[] {
+      new { Host = "videocallservice", Port = 80 }
+    }
+  },
+  // Подключение к VideoHub через SignalR (публичный доступ)
+  new {
+    Priority = 500,
+    UpstreamPathTemplate = "/videohub/{everything}",
+    UpstreamHttpMethod = new[] { "Get", "Post", "Put", "Delete", "Options" },
+    DownstreamPathTemplate = "/videohub/{everything}",
+    DownstreamScheme = "http",
+    DownstreamHostAndPorts = new[] {
+      new { Host = "videocallservice", Port = 80 }
+    },
+    WebSocketsProxyEnabled = true
+  },
+  // Проверка работоспособности VideoCallService
+  new {
+    Priority = 500,
+    UpstreamPathTemplate = "/api/videocall/health",
+    UpstreamHttpMethod = new[] { "Get" },
+    DownstreamPathTemplate = "/health",
+    DownstreamScheme = "http",
+    DownstreamHostAndPorts = new[] {
+      new { Host = "videocallservice", Port = 80 }
     }
   },
   // Swagger UI и документация
