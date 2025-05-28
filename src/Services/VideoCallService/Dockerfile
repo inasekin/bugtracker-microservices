@@ -2,16 +2,16 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
 # Копируем проектные файлы (.csproj)
-COPY ["VideoCallService.Domain/VideoCallService.Domain.csproj", "VideoCallService.Domain/"]
-COPY ["VideoCallService.DAL/VideoCallService.DAL.csproj", "VideoCallService.DAL/"]
-COPY ["VideoCallService.Api/VideoCallService.Api.csproj", "VideoCallService.Api/"]
-COPY ["VideoCallService.Infrastructure/VideoCallService.Infrastructure.csproj", "VideoCallService.Infrastructure/"]
+COPY ["src/Services/VideoCallService/VideoCallService.Domain/VideoCallService.Domain.csproj", "VideoCallService.Domain/"]
+COPY ["src/Services/VideoCallService/VideoCallService.DAL/VideoCallService.DAL.csproj", "VideoCallService.DAL/"]
+COPY ["src/Services/VideoCallService/VideoCallService.Api/VideoCallService.Api.csproj", "VideoCallService.Api/"]
+COPY ["src/Services/VideoCallService/VideoCallService.Infrastructure/VideoCallService.Infrastructure.csproj", "VideoCallService.Infrastructure/"]
 
 # Восстанавливаем зависимости
 RUN dotnet restore "VideoCallService.Api/VideoCallService.Api.csproj"
 
 # Копируем исходный код
-COPY . .
+COPY src/Services/VideoCallService/ .
 
 # Собираем проект
 WORKDIR "/src/VideoCallService.Api"
@@ -24,8 +24,9 @@ WORKDIR /app
 # Копируем appsettings
 COPY --from=build /src/VideoCallService.Api/appsettings*.json ./
 
-# Копируем JWT ключ из переменной среды
-ENV Jwt__Key="ThisIsASecretKeyWithEnoughLength12345"
+# JWT ключ должен быть передан через переменные окружения при запуске контейнера
+# Например: docker run -e Jwt__Key="your-secret-key" videocallservice
+# ENV Jwt__Key="ThisIsASecretKeyWithEnoughLength12345"
 
 # Копируем собранное приложение
 COPY --from=build /app/publish .
