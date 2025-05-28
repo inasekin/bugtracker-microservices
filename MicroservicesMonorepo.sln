@@ -57,6 +57,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileService.DAL", "src\Serv
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileService.Domain", "src\Services\FileService\FileService.Domain\FileService.Domain.csproj", "{28297514-B494-B48D-D9DF-0B73C05BADE9}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{C9147A09-ECC2-4480-ACCE-AA90AE906582}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Validation", "src\Common\Common.Validation\Common.Validation.csproj", "{D0558760-B2EF-496D-83C7-EE066F3CB597}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -135,6 +139,10 @@ Global
 		{28297514-B494-B48D-D9DF-0B73C05BADE9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{28297514-B494-B48D-D9DF-0B73C05BADE9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{28297514-B494-B48D-D9DF-0B73C05BADE9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D0558760-B2EF-496D-83C7-EE066F3CB597}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D0558760-B2EF-496D-83C7-EE066F3CB597}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D0558760-B2EF-496D-83C7-EE066F3CB597}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D0558760-B2EF-496D-83C7-EE066F3CB597}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -166,6 +174,8 @@ Global
 		{4E8341D3-D626-9B7E-6992-FC2EBE91DEA5} = {53F1702C-F4D0-47E8-B469-47508E67E9DE}
 		{F3D27FDE-808A-27C4-C961-78CA2E377CB6} = {53F1702C-F4D0-47E8-B469-47508E67E9DE}
 		{28297514-B494-B48D-D9DF-0B73C05BADE9} = {53F1702C-F4D0-47E8-B469-47508E67E9DE}
+		{C9147A09-ECC2-4480-ACCE-AA90AE906582} = {F190F114-F79F-47B4-A5FE-EB7078B4F8DF}
+		{D0558760-B2EF-496D-83C7-EE066F3CB597} = {C9147A09-ECC2-4480-ACCE-AA90AE906582}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1DF65D93-A07E-4A1B-A58C-75EAA0D1067B}
