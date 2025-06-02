@@ -1,8 +1,10 @@
 using AutoMapper;
+using Common.Validation;
+using IssueService.Api.Contracts;
 using IssueService.Api.Mappers;
+using IssueService.Api.Validators;
 using IssueService.DAL;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -34,6 +36,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IssueRepository>();
+builder.Services.AddScoped<ICommonValidator<IssueRequest>, IssueRequestValidator>();
 //builder.Services.AddScoped<ProjectsEfDbInitializer>();
 
 var connectionString = builder.Configuration.GetConnectionString("Default");

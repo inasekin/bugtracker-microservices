@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Common\Common.Validation\Common.Validation.csproj" />
     <ProjectReference Include="..\IssueService.DAL\IssueService.DAL.csproj" />
   </ItemGroup>
 

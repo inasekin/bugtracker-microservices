@@ -1,9 +1,10 @@
 using AutoMapper;
+using Common.Validation;
+using FluentValidation;
 using IssueService.Api.Contracts;
 using IssueService.DAL;
 using IssueService.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using FileInfo = IssueService.Domain.Models.FileInfo;
 
 namespace Bugtracker.WebHost.Controllers
@@ -18,13 +19,16 @@ namespace Bugtracker.WebHost.Controllers
     {
         private readonly IssueRepository _issues;
         private readonly IMapper _mapper;
+        private readonly ICommonValidator<IssueRequest> _validator;
 
         public IssuesController(
             IssueRepository issues,
-            IMapper mapper)
+            IMapper mapper,
+            ICommonValidator<IssueRequest> validator)
         {
             _issues = issues;
             _mapper = mapper;
+            _validator = validator;
         }
 
         [HttpGet]
@@ -64,6 +68,8 @@ namespace Bugtracker.WebHost.Controllers
         [HttpPost]
         public async Task<ActionResult<IssueResponse>> CreateIssuesAsync(IssueRequest request)
         {
+            _validator.ValidateAndThrow(request);
+
             Issue issue = new();
             MapProject(request, issue);
             await _issues.AddAsync(issue);
