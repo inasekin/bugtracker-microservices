@@ -91,8 +91,8 @@ services:
 
     videocallservice:
         build:
-            context: ../src/Services/VideoCallService
-            dockerfile: Dockerfile
+            context: ../
+            dockerfile: ./src/Services/VideoCallService/Dockerfile
         container_name: videocallservice
         ports:
             - "5007:80"

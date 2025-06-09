@@ -72,6 +72,19 @@ namespace Bugtracker.WebHost.Controllers
 
             Issue issue = new();
             MapProject(request, issue);
+            
+            // Устанавливаем даты создания и обновления
+            issue.CreatedAt = DateTime.UtcNow;
+            issue.UpdatedAt = DateTime.UtcNow;
+            
+            // Если AuthorId не указан в запросе, можно попробовать получить из контекста
+            if (issue.AuthorId == Guid.Empty)
+            {
+                // TODO: Получить ID пользователя из JWT токена
+                // Пока что используем значение из запроса или генерируем новый GUID
+                issue.AuthorId = request.AuthorId != Guid.Empty ? request.AuthorId : Guid.NewGuid();
+            }
+            
             await _issues.AddAsync(issue);
 
             var issueResponse = MapProject(issue);
@@ -86,6 +99,9 @@ namespace Bugtracker.WebHost.Controllers
                 return NotFound();
 
             MapProject(request, issue);
+            
+            // Обновляем дату изменения
+            issue.UpdatedAt = DateTime.UtcNow;
 
             await _issues.UpdateAsync(issue);
 
